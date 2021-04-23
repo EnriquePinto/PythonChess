@@ -4,6 +4,9 @@
 #   move_piece: from an expanded FEN and a legal move returns an expanded FEN for a position in which such move was made
 #	avl_movs: from a FEN code returns all legal moves for that piece (first verifying the FEN code agrees with the local piece position)
 
+
+# Note: make "move_piece" method receive a complete FEN and return a complete FEN!
+
 import util
 
 class board:
@@ -298,21 +301,6 @@ class pawn:
 				
 		return avl_mov_list
 
-# avl_movs workflow: 
-#	1. Interpret the FEN
-#	2. Checks if local piece color and square agrees with FEN
-#	3. Checks piece color
-#	4. Generate moves for that color
-#	5. Make each move on a local board object and look for checks and ilegal moves
-#	6. Mark "is check?" move tuple field and remove ilegal moves
-#	7. Return legal moves
-
-
-# Each piece move output is a tuple: (target square, type of move, is check?)
-# Move types: 0 = normal; 1 = capture; 2 = double pawn move; 3 = en passant; 
-#			  4/5/6/7 = promotion to queen/rook/knight/bishop; 14/15/16/17 = capture and promotion to queen/rook/knight/bishop
-#			  8/9 = castle short/long
-
 class rook:
 
 	def __init__(self, name, color, sqr):
@@ -321,7 +309,7 @@ class rook:
 		self.color = color
 		self.sqr = sqr
 
-	def move_piece(self,exp_pos,move):
+	def move_piece(self, exp_pos, move):
 		# Empty previous piece position
 		new_exp_pos=[char for char in exp_pos]
 		new_exp_pos[self.sqr]='u'
@@ -492,4 +480,44 @@ class rook:
 						break
 
 		return avl_mov_list
-		
+
+
+class bishop:
+
+	def __init__(self, name, color, sqr):
+		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
+		self.name = name
+		self.color = color
+		self.sqr = sqr
+
+	def move_piece(self, exp_pos, move):
+		# Empty previous piece position
+		new_exp_pos=[char for char in exp_pos]
+		new_exp_pos[self.sqr]='u'
+
+		# Fill new piece position
+		# If piece is white, fill with white piece
+		if self.color==0:
+			new_exp_pos[move[0]]='B'
+		# If it is black, fill with black piece
+		else:
+			new_exp_pos[move[0]]='b'
+
+		new_exp_pos = ''.join(new_exp_pos)
+		return new_exp_pos
+
+
+# avl_movs workflow: 
+#	1. Interpret the FEN
+#	2. Checks if local piece color and square agrees with FEN
+#	3. Checks piece color
+#	4. Generate moves for that color
+#	5. Make each move on a local board object and look for checks and ilegal moves
+#	6. Mark "is check?" move tuple field and remove ilegal moves
+#	7. Return legal moves
+
+
+# Each piece move output is a tuple: (target square, type of move, is check?)
+# Move types: 0 = normal; 1 = capture; 2 = double pawn move; 3 = en passant; 
+#			  4/5/6/7 = promotion to queen/rook/knight/bishop; 14/15/16/17 = capture and promotion to queen/rook/knight/bishop
+#			  8/9 = castle short/long
