@@ -14,13 +14,15 @@ unicode_pieces = dict([('K',K), ('Q',Q), ('R',R), ('B',B), ('N',N), ('P',P),
 
 def read_fen(pos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):	
 	"""
-	Extracts the information from a FEN code and returns:
+	Extracts the information from a FEN or eFEN code and returns:
 		- Pieces positions
 		- Color to move
 		- Castling rights
 		- En passant target square
 		- Half move counter
 		- Full move counter
+
+	If input was FEN code, returns standard piece position; if it was an eFEN, returns expanded piece position
 	"""
 	pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = pos.split(" ",6)
 	return pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk
@@ -42,7 +44,7 @@ def expand_piece_pos(pos):
 				expanded_pos+=character
 	return expanded_pos
 
-def compact_piece_pos(exp_pos):
+def contract_piece_pos(exp_pos):
 	"""
 	Contracts expanded piece position converting empty squares into numbers and adding line breaks('/')
 	"""
@@ -65,6 +67,23 @@ def compact_piece_pos(exp_pos):
 			comp_pos+=str(empty_cnt)
 	return comp_pos
 
+def fen2efen(fen):
+	"""
+	Returns an eFEN code from a FEN code, expanding the piece position section
+	"""
+	pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = read_fen(fen)
+	exp_piece_pos = expand_piece_pos(pieces_pos)
+	return exp_piece_pos+' '+clr_to_move+' '+castl_avl+' '+en_pas_targ+' '+half_mov_clk+' '+mov_clk
+
+def efen2fen(efen):
+	"""
+	Returns a FEN code from an eFEN code, contracting the piece position section
+	"""
+	exp_pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = read_fen(efen)
+	piece_pos = contract_piece_pos(exp_pieces_pos)
+	return piece_pos+' '+clr_to_move+' '+castl_avl+' '+en_pas_targ+' '+half_mov_clk+' '+mov_clk
+
+
 def coord2sqr(coord):
 	"""
 	Converts standard chess coordinates to square number (0 to 63)
@@ -80,15 +99,12 @@ def sqr2coord(sqr):
 	nbr2let = ['a','b','c','d','e','f','g','h']
 	return nbr2let[sqr%8]+str((8-int(sqr/8)))
 
-def print_fen(pos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', rd_pcs_only = False, symbol_print=False):
+def print_fen(fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', symbol_print=False):
 		"""
 		Prints board in unicode from a FEN string
 		"""
-		# Adds the option of printing only board and pieces
-		if not rd_pcs_only:
-			pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = read_fen(pos)
-		else:
-			pieces_pos = pos
+		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = read_fen(fen)
+
 		print('')
 		# Prints board
 		for character in pieces_pos:
@@ -106,6 +122,5 @@ def print_fen(pos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 
 					else:
 						print('|','\u0305',character, end='', sep='')
 		print('|\n \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305   ')
-		if not rd_pcs_only:
-			print('{} moves, cstl={}, e.p.={}, mov{}'.format(clr_to_move, castl_avl, en_pas_targ, mov_clk))
+		print('{} moves, cstl={}, e.p.={}, mov{}, half mov{}'.format(clr_to_move, castl_avl, en_pas_targ, mov_clk, half_mov_clk))
 		print('')

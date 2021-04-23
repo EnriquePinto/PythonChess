@@ -1,11 +1,11 @@
 # File containing all piece and board classes definitions
 # All piece classes contain the following methods:
 # 	__init__: starts up the piece name, color, and square
-#   move_piece: from an expanded FEN and a legal move returns an expanded FEN for a position in which such move was made
+#   move_piece: from an expanded FEN and a legal move returns an expanded FEN (eFEN) for a position in which such move was made
 #	avl_movs: from a FEN code returns all legal moves for that piece (first verifying the FEN code agrees with the local piece position)
 
 
-# Note: make "move_piece" method receive a complete FEN and return a complete FEN!
+# Note: make "move_piece" method receive a complete FEN and return a complete eFEN!
 
 import util
 
@@ -33,7 +33,20 @@ class pawn:
 		self.color = color
 		self.sqr = sqr
 
-	def move_piece(self, exp_pos, move):
+	def move_piece(self, move, efen):
+		"""
+		Makes the described move from a FEN code, returns expanded FEN (eFEN) of move made
+		"""
+
+		# Interprets the input EFEN code
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
+
+		# Checks if no turn mismatch occured (white piece can only move on white turn)
+		if self.color == 0:
+			assert clr_to_move=='w', "MOV_CLR_ERR: Wrong color to move, this piece is not allowed to move in the current turn"
+		else:
+			assert clr_to_move=='b', "MOV_CLR_ERR: Wrong color to move, this piece is not allowed to move in the current turn"
+
 		# Empty previous piece position
 		new_exp_pos=[char for char in exp_pos]
 		new_exp_pos[self.sqr]='u'
@@ -86,8 +99,70 @@ class pawn:
 			else:
 				new_exp_pos[move[0]-8]='u'
 
+		# Synthesizes new expanded position
 		new_exp_pos = ''.join(new_exp_pos)
-		return new_exp_pos
+
+		# Defines new color to move
+		if clr_to_move=='w':
+			new_clr_to_move='b'
+		else:
+			new_clr_to_move='w'
+
+		# Checks new castling availability
+		# If no one can castle now, no castling can be available in the future
+		if castl_avl=='-':
+			new_castl_avl='-'
+		else:
+			# A pawn move can only remove castling rights if it captures a rook
+			# Check by color case by case
+			if self.color==0:
+				# No white pawn move can remove white castling rights and vice versa (only temporarily prevent castling, i.e. leaving castling route in check)
+				# Therefore white pawn moves can only change black's castling rights (e.g. by capturing a rook)
+				# If black can castle kingside and white captured kingside rook, remove black kingside castling rights
+				if 'k' in castl_avl and move[0]==7 and move[1] in [1,4,5,6,7,14,15,16,17]:
+					new_castl_avl = castl_avl.replace('k','')
+				# If black can castle queenside and white captured queenside rook, remove black queenside castling rights
+				elif 'q' in castl_avl and move[0]==0 and move[1] in [1,4,5,6,7,14,15,16,17]:
+					new_castl_avl = castl_avl.replace('q','')
+				# If no capture was made, preserve castling rights
+				else:
+					new_castl_avl = castl_avl
+			else:
+				# If white can castle kingside and black captured kingside rook, remove white kingside castling rights
+				if 'K' in castl_avl and move[0]==63 and move[1] in [1,4,5,6,7,14,15,16,17]:
+					new_castl_avl = castl_avl.replace('K','')
+				# If white can castle queenside and black captured queenside rook, remove white queenside castling rights
+				elif 'Q' in castl_avl and move[0]==56 and move[1] in [1,4,5,6,7,14,15,16,17]:
+					new_castl_avl = castl_avl.replace('Q','')
+				# If no capture was made, preserve castling rights
+				else:
+					new_castl_avl = castl_avl
+
+		# If double pawn move, add en passant target
+		if move[1]==2:
+			# Check color
+			if self.color==0:
+				new_en_pas_targ=util.sqr2coord(move[0]+8)
+			else:
+				new_en_pas_targ=util.sqr2coord(move[0]-8)
+		# En passant only happens immediately after a double pawn move
+		else:
+			new_en_pas_targ='-'
+
+		# Increments half move clock if no pawn advance or capture has been made
+		# Every pawn move resets hal move clock
+		new_half_mov_clk=str(0)
+
+		# Increments move clock after a black move
+		if clr_to_move=='b':
+			new_mov_clk=str(int(mov_clk)+1)
+		# If white move, keep move clock as is
+		else:
+			new_mov_clk=mov_clk
+
+		new_exp_fen = new_exp_pos+' '+new_clr_to_move+' '+new_castl_avl+' '+new_en_pas_targ+' '+new_half_mov_clk+' '+new_mov_clk
+
+		return new_exp_fen
 
 	def avl_movs(self, fen):
 		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)

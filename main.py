@@ -30,19 +30,20 @@ import pcs
 # 	Captures: All capture moves have the first digit of move type equals 1
 #	Attacks: TO DO!
 
-FEN = '8/2p5/5p2/3pP3/8/1R2r2q/8/8 w - d6 0 1'
+FEN = 'r3k2r/1P4P1/8/8/8/8/1p4p1/R3K2R b KQkq - 0 2'
 fen_pos,_,_,_,_,_ = util.read_fen(FEN)
 
-util.print_fen(pos=FEN)
+util.print_fen(FEN)
 
-pawn1 = pcs.pawn('p1',1,util.coord2sqr('c7'))
+pawn1 = pcs.pawn('p1',1,util.coord2sqr('g2'))
 pawn1_moves = pawn1.avl_movs(FEN)
 
-rook1 = pcs.rook('r1',0,util.coord2sqr('b3'))
-rook1_moves = rook1.avl_movs(FEN)
+# rook1 = pcs.rook('r1',0,util.coord2sqr('b3'))
+# rook1_moves = rook1.avl_movs(FEN)
 
-print(rook1_moves)
+print(pawn1_moves)
 
-new_move = rook1.move_piece(util.expand_piece_pos(FEN), rook1_moves[0])
-util.print_fen(util.compact_piece_pos(new_move), rd_pcs_only=True)
+new_move = pawn1.move_piece(pawn1_moves[4], util.fen2efen(FEN))
+
+util.print_fen(util.efen2fen(new_move))
 
