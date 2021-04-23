@@ -2,14 +2,14 @@
 
 My private python chess engine project.
 
-To do:  -1.Board and piece objects
-	-2.Board printing function 
- 	-3.Move generation (piece movements, legal moves, pawn moves, castling, en passant, promotion, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
-	-4.Position Evaluation
-	-5.Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
-	-6.Move order improvement
-	-7.Quiescence Search
-	-8.Iterative Deepening Depth First
+To do:  1. Board and piece objects
+	2. Board printing function 
+ 	3. Move generation (piece movements, legal moves, pawn moves, castling, en passant, promotion, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
+	4. Position Evaluation
+	5. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
+	6. Move order improvement
+	7. Quiescence Search
+	8. Iterative Deepening Depth First
 
 Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 Pieces colors are represented by a bynary digit: 0=white, 1=black
