@@ -4,13 +4,13 @@ My private python chess engine project.
 
 To do:  
 1. Board and piece objects
-2. Board printing function 
- 3. Move generation (piece movements, legal moves, pawn moves, castling, en passant, promotion, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
-4. Position Evaluation
-5. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
-6. Move order improvement
-7. Quiescence Search
-8. Iterative Deepening Depth First
+2. Move generation (piece movements, legal moves, castling, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
+3. Position Evaluation
+4. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
+5. Move order improvement
+6. Quiescence Search
+7. Iterative Deepening Depth First
+8. Monte Carlo Random Tree Search (computationally viable?)
 
 ---
 
