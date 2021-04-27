@@ -29,7 +29,7 @@ import pcs
 # 	Captures: All capture moves have the first digit of move type equals 1
 #	Attacks: TO DO!
 
-FEN = 'r3k2r/8/2B2B2/8/8/2b2b2/8/R3K2R b KQkq - 0 1'
+FEN = 'NN4nn/NNn3nn/8/3n1N2/2n1N3/6N1/NN4nn/NN4nn b - - 0 1'
 fen_pos,_,_,_,_,_ = util.read_fen(FEN)
 
 util.print_fen(FEN)
@@ -37,15 +37,18 @@ util.print_fen(FEN)
 # pawn1 = pcs.pawn('p1',1,util.coord2sqr('g2'))
 # pawn1_moves = pawn1.avl_movs(FEN)
 
-rook1 = pcs.rook('r1',1,util.coord2sqr('a8'))
-rook1_moves = rook1.avl_movs(FEN)
+# rook1 = pcs.rook('r1',1,util.coord2sqr('a8'))
+# rook1_moves = rook1.avl_movs(FEN)
 
-bishop1 = pcs.bishop('b1',1,util.coord2sqr('f3'))
-bishop1_moves = bishop1.avl_movs(FEN)
+# bishop1 = pcs.bishop('b1',1,util.coord2sqr('f3'))
+# bishop1_moves = bishop1.avl_movs(FEN)
 
-print(bishop1_moves)
+knight1 = pcs.knight('n1',1,util.coord2sqr('d5'))
+knight1_moves = knight1.avl_movs(FEN)
 
-new_move = bishop1.move_piece(bishop1_moves[-3], util.fen2efen(FEN))
+print(knight1_moves)
+
+new_move = knight1.move_piece(knight1_moves[6], util.fen2efen(FEN))
 
 util.print_fen(util.efen2fen(new_move))
 

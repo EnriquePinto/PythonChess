@@ -514,7 +514,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# DOWNWARDS MOVES
 			for i in range(1,8):
@@ -531,7 +531,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# KINGSIDEWARDS MOVES
 			for i in range(1,8):
@@ -548,7 +548,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# QUEENSIDEWARDS MOVES
 			for i in range(1,8):
@@ -565,7 +565,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 		# Generate black moves if black
@@ -585,7 +585,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# DOWNWARDS MOVES
 			for i in range(1,8):
@@ -602,7 +602,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# KINGSIDEWARDS MOVES
 			for i in range(1,8):
@@ -619,7 +619,7 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 			# QUEENSIDEWARDS MOVES
 			for i in range(1,8):
@@ -636,11 +636,10 @@ class rook:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 		return avl_mov_list
-
 
 class bishop:
 
@@ -749,7 +748,7 @@ class bishop:
 		
 		avl_mov_list = []
 
-		# Generate white pawn moves if white
+		# Generate white moves if white
 		if self.color==0:
 			# BLACK-KINGSIDE DIAGONAL MOVES
 			for i in range(1,8):
@@ -766,7 +765,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# BLACK-QUEENSIDE DIAGONAL MOVES
@@ -784,7 +783,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# WHITE-KINGSIDE DIAGONAL MOVES
@@ -802,7 +801,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# WHITE-QUEENSIDE DIAGONAL MOVES
@@ -820,7 +819,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 		# Generate black moves if black			
@@ -840,7 +839,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# BLACK-QUEENSIDE DIAGONAL MOVES
@@ -858,7 +857,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# WHITE-KINGSIDE DIAGONAL MOVES
@@ -876,7 +875,7 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 			# WHITE-QUEENSIDE DIAGONAL MOVES
@@ -894,11 +893,256 @@ class bishop:
 						break
 					# Generate capture if finds enemy piece and stop
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1))
+						avl_mov_list.append((target_sqr,1,))
 						break
 
 		return avl_mov_list
 
+
+# KNIGHT MOVE LIST
+
+# Knight move position legend:
+#
+#  2   3  	| 1 => -10 ; 2 => -17 ; 3 => -15 ; 4 => -6 
+# 1     4	| 5 => +10 ; 6 => +17 ; 7 => +15 ; 8 => +6
+#    N 		|
+# 8     5	|
+#  7   6 	|
+#
+# A3 B5 C5 C5 C5 C5 B6 A4
+# B4 C4 D3 D3 D3 D3 C6 B7
+# C3 D2 E_ E_ E_ E_ D4 C7
+# C3 D2 E_ E_ E_ E_ D4 C7
+# C3 D2 E_ E_ E_ E_ D4 C7
+# C3 D2 E_ E_ E_ E_ D4 C7
+# B3 C2 D1 D1 D1 D1 C8 B8
+# A2 B2 C1 C1 C1 C1 B1 A1
+# 
+# Move count legend:
+# A/B/C/D/E = 2/3/4/6/8 moves
+#
+# A1: 1,2                   | A2: 3,4                   | A3: 5,6                   | A4: 7,8
+# B1: 1,2,3   | B2: 2,3,4   | B3: 3,4,5   | B4: 4,5,6   | B5: 5,6,7   | B6: 6,7,8   | B7: 7,8,1   | B8: 8,1,2
+# C1: 1,2,3,4 | C2: 2,3,4,5 | C3: 3,4,5,6 | C4: 4,5,6,7 | C5: 5,6,7,8 | C6: 6,7,8,1 | C7: 7,8,1,2 | C8: 8,1,2,3
+# D1: 8,1,2,3,4,5           | D2: 2,3,4,5,6,7           | D3: 4,5,6,7,8,1           | D4: 3,6,7,8,1,2
+# E: 1,2,3,4,5,6,7,8
+#
+# 25 types of squares in total
+
+# Defines a list of pseudo-legal knight moves by square
+knight_mov_list = []
+for i in range(64):
+	# A1
+	if i==63:
+		moves=[-10,-17]
+	# A2
+	elif i==56:
+		moves=[-15,-6]
+	# A3
+	elif i==0:
+		moves=[10,17]
+	# A4
+	elif i==7:
+		moves=[15,6]
+	# B1
+	elif i==62:
+		moves=[-10,-17,-15]
+	# B2
+	elif i==57:
+		moves=[-17,-15,-6]
+	# B3
+	elif i==48:
+		moves=[-15,-6,10]
+	# B4
+	elif i==8:
+		moves=[-6,10,17]
+	# B5
+	elif i==1:
+		moves=[10,17,15]
+	# B6
+	elif i==6:
+		moves=[17,15,6]
+	# B7
+	elif i==15:
+		moves=[15,6,-10]
+	# B8
+	elif i==55:
+		moves=[6,-10,-17]
+	# C1
+	elif i in [58,59,60,61,62]:
+		moves=[-10,-17,-15,-6]
+	# C2
+	elif i==49:
+		moves=[-17,-15,-6,10]
+	# C3
+	elif i in [16,24,32,40]:
+		moves=[-15,-6,10,17]
+	# C4
+	elif i==9:
+		moves=[-6,10,17,15]
+	# C5
+	elif i in [2,3,4,5]:
+		moves=[10,17,15,6]
+	# C6
+	elif i==14:
+		moves=[-10,6,15,17]
+	# C7 
+	elif i in [23,31,39,47]:
+		moves=[15,6,-10,-17]
+	# C8
+	elif i==54:
+		moves=[6,-10,-17,-15]
+	# D1
+	elif i in [50,51,52,53]:
+		moves=[10,6,-10,-17,-15,-6]
+	# D2
+	elif i in [17,25,33,41]:
+		moves=[10,17,15,-17,-15,-6]
+	# D3
+	elif i in [10,11,12,13]:
+		moves=[10,17,15,6,-10,-6]
+	# D4
+	elif i in [22,30,38,46]:
+		moves=[17,15,6,-10,-17,-15]
+	# E
+	else:
+		moves=[10,17,15,6,-10,-17,-15,-6]
+	knight_mov_list.append(moves)
+
+class knight:
+
+	def __init__(self, name, color, sqr):
+		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
+		self.name = name
+		self.color = color
+		self.sqr = sqr
+
+	def move_piece(self, move, efen):
+		"""
+		Makes the described move from a FEN code, returns expanded FEN (eFEN) of move made
+		"""
+
+		# Interprets the input EFEN code
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
+
+		# Checks if no turn mismatch occured (white piece can only move on white turn)
+		if self.color == 0:
+			assert clr_to_move=='w', "MOV_CLR_ERR: Wrong color to move, this piece is not allowed to move in the current turn"
+		else:
+			assert clr_to_move=='b', "MOV_CLR_ERR: Wrong color to move, this piece is not allowed to move in the current turn"
+
+		# Empty previous piece position
+		new_exp_pos=[char for char in exp_pos]
+		new_exp_pos[self.sqr]='u'
+
+		# Fill new piece position
+		# If piece is white, fill with white piece
+		if self.color==0:
+			new_exp_pos[move[0]]='N'
+		# If it is black, fill with black piece
+		else:
+			new_exp_pos[move[0]]='n'
+
+		new_exp_pos = ''.join(new_exp_pos)
+		
+		# Defines new color to move
+		if clr_to_move=='w':
+			new_clr_to_move='b'
+		else:
+			new_clr_to_move='w'
+
+		# Checks new castling availability
+		# If no one can castle now, no castling can be available in the future
+		if castl_avl=='-':
+			new_castl_avl='-'
+		else:
+			# Check by color
+			if self.color==0:
+				# White knights remove castling rights by capturing oponent rook
+				# Rights are the same in case no conditional is triggered
+				new_castl_avl = castl_avl
+				# Capturing oponent rook
+				# If black can castle kingside and white captured kingside rook, remove black kingside castling rights
+				if 'k' in castl_avl and move[0]==7 and move[1]==1:
+					new_castl_avl = new_castl_avl.replace('k','')
+				# If black can castle queenside and white captured queenside rook, remove black queenside castling rights
+				elif 'q' in castl_avl and move[0]==0 and move[1]==1:
+					new_castl_avl = new_castl_avl.replace('q','')
+
+			else:
+				# Black knights remove castling rights by capturing oponent rook
+				# Rights are the same in case no conditional is triggered
+				new_castl_avl = castl_avl
+				# Capturing oponent rook
+				# If white can castle kingside and black captured kingside rook, remove white kingside castling rights
+				if 'K' in castl_avl and move[0]==63 and move[1]==1:
+					new_castl_avl = new_castl_avl.replace('K','')
+				# If white can castle queenside and black captured queenside rook, remove white queenside castling rights
+				elif 'Q' in castl_avl and move[0]==56 and move[1]==1:
+					new_castl_avl = new_castl_avl.replace('Q','')
+
+		# Any knight move removes en passant target
+		new_en_pas_targ='-'
+
+		# Increments half move clock if no pawn advance or capture has been made
+		# Checks if capture happened
+		if move[1]==1:
+			new_half_mov_clk=str(0)
+		# No capture or pawn move increments half move counter
+		else:
+			new_half_mov_clk=str(int(half_mov_clk)+1)
+
+		# Increments move clock after a black move
+		if clr_to_move=='b':
+			new_mov_clk=str(int(mov_clk)+1)
+		# If white move, keep move clock as is
+		else:
+			new_mov_clk=mov_clk
+
+		new_exp_fen = new_exp_pos+' '+new_clr_to_move+' '+new_castl_avl+' '+new_en_pas_targ+' '+new_half_mov_clk+' '+new_mov_clk
+
+		return new_exp_fen
+
+	def avl_movs(self, fen):
+		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
+
+		exp_pos = util.expand_piece_pos(pieces_pos)
+		
+		# Asserts that local piece parameters agree with with input position
+		if self.color==0:
+			assert exp_pos[self.sqr]=='N', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
+		else:
+			assert exp_pos[self.sqr]=='n', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
+		
+		avl_mov_list = []
+
+		# Generate white moves if white
+		if self.color==0:
+			for move in knight_mov_list[self.sqr]:
+				target_sqr = self.sqr+move
+				# Don't include move if occupied by friendly piece
+				if exp_pos[target_sqr]=='u':
+					avl_mov_list.append((target_sqr,0,))
+				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+					pass
+				# Generate capture if finds enemy piece
+				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+					avl_mov_list.append((target_sqr,1,))
+
+		# Generate black moves if black			
+		else:
+			for move in knight_mov_list[self.sqr]:
+				target_sqr = self.sqr+move
+				# Don't include move if occupied by friendly piece
+				if exp_pos[target_sqr]=='u':
+					avl_mov_list.append((target_sqr,0,))
+				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+					pass
+				# Generate capture if finds enemy piece
+				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+					avl_mov_list.append((target_sqr,1,))
+
+		return avl_mov_list
 
 # avl_movs workflow: 
 #	1. Interpret the FEN
