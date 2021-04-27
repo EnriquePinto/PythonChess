@@ -10,7 +10,8 @@ To do:
 5. Move order improvement
 6. Quiescence Search
 7. Iterative Deepening Depth First
-8. Monte Carlo Random Tree Search (computationally viable?)
+8. Monte Carlo Random Tree Search (computationally viable at least for some evaluations?)
+9. Transposition tables
 
 ---
 
