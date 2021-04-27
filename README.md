@@ -12,6 +12,7 @@ To do:
 7. Iterative Deepening Depth First
 8. Monte Carlo Random Tree Search (computationally viable at least for some evaluations?)
 9. Transposition tables
+10. Improve move generation (magic bitboards, etc.)
 
 ---
 
