@@ -4,13 +4,15 @@ My private python chess engine project.
 
 To do:  
 1. Board and piece objects
-2. Board printing function 
- 3. Move generation (piece movements, legal moves, pawn moves, castling, en passant, promotion, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
-4. Position Evaluation
-5. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
-6. Move order improvement
-7. Quiescence Search
-8. Iterative Deepening Depth First
+2. Move generation (piece movements, legal moves, castling, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
+3. Position Evaluation
+4. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
+5. Move order improvement
+6. Quiescence Search
+7. Iterative Deepening Depth First
+8. Monte Carlo Random Tree Search (computationally viable at least for some evaluations?)
+9. Transposition tables
+10. Improve move generation (magic bitboards, etc.)
 
 ---
 
@@ -43,3 +45,9 @@ Identifying checks, captures, attacks:
 * Checks: All checks have the "is check?" field equals "True"
 * Captures: All capture moves have the first digit of move type equals 1
 * Attacks: TO DO!
+
+---
+
+Remarks:
+* It may actually be useful to generate pseudolegal moves and attach a very high evaluation penalty for losing the king. This alone wouldn't eliminate the generation of ilegal moves (breaking of absolute pins, for example), but would very much eliminate these moves from any interesting sequence of moves in the alpha-beta pruning, since they lose immediately.
+* Generating moves through precalculated stored bitboards and using magic bitboards and masking is considered to be the vastly superior option for move generation speed benchmarks. These generated moves need to be verified for legality (or not, see above bulletpoint) and its properties (check, capture, attack, pin, etc.) considered for move ordering reasons. Future updates may include calculation of magic bitboards and an overhaul of move generation.
