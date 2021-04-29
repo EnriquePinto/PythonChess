@@ -1,6 +1,7 @@
 # File containing all frequently used functions for manipulating board and square position data
 # Enrique T. R. Pinto 2021
 
+import pcs
 
 # UNICODE CHESS PIECES:
 # wK = U+2654 / wQ = U+2655 / wR = U+2656 / wB = U+2657 / wN = U+2658 / wp = U+2659
@@ -124,3 +125,59 @@ def print_fen(fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 
 		print('|\n \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305   ')
 		print('{} moves, cstl={}, e.p.={}, mov{}, half mov{}'.format(clr_to_move, castl_avl, en_pas_targ, mov_clk, half_mov_clk))
 		print('')
+
+def translate_move(move):
+	# Checks color
+	if move[0].color==0:
+		# Pawn
+		if isinstance(move[0],pcs.pawn):
+			output=sqr2coord(move[0].sqr)+' P->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Rook
+		elif isinstance(move[0],pcs.rook):
+			output=sqr2coord(move[0].sqr)+' R->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Bishop
+		elif isinstance(move[0],pcs.bishop):
+			output=sqr2coord(move[0].sqr)+' B->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Knight
+		elif isinstance(move[0],pcs.knight):
+			output=sqr2coord(move[0].sqr)+' K->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Queen
+		elif isinstance(move[0],pcs.queen):
+			output=sqr2coord(move[0].sqr)+' Q->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# King
+		elif isinstance(move[0],pcs.king):
+			output=sqr2coord(move[0].sqr)+' K->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+
+	else:
+		# Pawn
+		if isinstance(move[0],pcs.pawn):
+			output=sqr2coord(move[0].sqr)+' p->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Rook
+		elif isinstance(move[0],pcs.rook):
+			output=sqr2coord(move[0].sqr)+' r->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Bishop
+		elif isinstance(move[0],pcs.bishop):
+			output=sqr2coord(move[0].sqr)+' b->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Knight
+		elif isinstance(move[0],pcs.knight):
+			output=sqr2coord(move[0].sqr)+' k->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# Queen
+		elif isinstance(move[0],pcs.queen):
+			output=sqr2coord(move[0].sqr)+' q->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+		# King
+		elif isinstance(move[0],pcs.king):
+			output=sqr2coord(move[0].sqr)+' k->'+sqr2coord(move[1][0])
+			output=output+'('+str(move[1][1])+')'
+
+	return output

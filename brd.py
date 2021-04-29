@@ -66,6 +66,11 @@ class board:
 
 		return move_list
 
+	def print_avl_moves(self):
+		for move in self.avl_movs():
+			print(util.translate_move(move), end='; ')
+		print('')
+
 	def make_move(self, move):
 		new_move=move[0].move_piece(move[1],self.efen)
 		self.set(new_move)
