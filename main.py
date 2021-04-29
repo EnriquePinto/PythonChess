@@ -14,6 +14,7 @@
 
 import util
 import pcs
+import brd
 # Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 # Pieces colors are represented by a bynary digit: 0=white, 1=black
 
@@ -29,31 +30,36 @@ import pcs
 # 	Captures: All capture moves have the first digit of move type equals 1
 #	Attacks: TO DO!
 
-FEN = 'r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1'
-fen_pos,_,_,_,_,_ = util.read_fen(FEN)
+start_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+EFEN=util.fen2efen(start_fen)
 
-util.print_fen(FEN)
 
-# pawn1 = pcs.pawn('p1',1,util.coord2sqr('g2'))
-# pawn1_moves = pawn1.avl_movs(FEN)
+util.print_fen(util.efen2fen(EFEN))
 
-# rook1 = pcs.rook('r1',1,util.coord2sqr('a8'))
-# rook1_moves = rook1.avl_movs(FEN)
+board1 = brd.board()
+board1.set(EFEN)
+mov_list1=board1.avl_movs()
 
-# bishop1 = pcs.bishop('b1',1,util.coord2sqr('f3'))
-# bishop1_moves = bishop1.avl_movs(FEN)
+# 1st move
+print(mov_list1)
+new_move1=board1.make_move(mov_list1[7])
+print(new_move1)
+util.print_fen(util.efen2fen(new_move1))
 
-# knight1 = pcs.knight('n1',1,util.coord2sqr('d5'))
-# knight1_moves = knight1.avl_movs(FEN)
+# 2nd move
+mov_list2=board1.avl_movs()
+print(mov_list2)
+new_move2=board1.make_move(mov_list2[13])
+print(new_move2)
+util.print_fen(util.efen2fen(new_move2))
 
-# queen1 = pcs.queen('q1',1,util.coord2sqr('d5'))
-# queen1_moves = queen1.avl_movs(FEN)
+# 3rd move
+mov_list3=board1.avl_movs()
+print(mov_list3)
+new_move3=board1.make_move(mov_list3[1])
+print(new_move3)
+util.print_fen(util.efen2fen(new_move3))
 
-king1 = pcs.king('k1',1,util.coord2sqr('e8'))
-king1_moves = king1.avl_movs(FEN)
 
-new_move = king1.move_piece(king1_moves[-1], util.fen2efen(FEN))
-print(new_move)
 
-util.print_fen(util.efen2fen(new_move))
 

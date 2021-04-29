@@ -12,27 +12,10 @@
 
 import util
 
-class board:
-
-	def set(self, fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'):
-		# Expand FEN and instantiate a piece in each position
-		# Use piece_list with piece objects
-		pass
-
-# A board object is to be used in every piece object instance to identify legal moves and checks!
-# 	-The actual board object where moves will be made is to be called 'main_board'
-# 	-The local instance of a board object in a piece object is to be called 'local_board'
-
-# Each piece move output is a tuple: (target square, type of move, is check?)
-# Move types: 0 = normal; 1 = capture; 2 = double pawn move; 3 = en passant; 
-#			  4/5/6/7 = promotion to queen/rook/knight/bishop; 14/15/16/17 = capture and promotion to queen/rook/knight/bishop
-#			  8/9 = castle short/long
-
 class pawn:
 
-	def __init__(self, name: str, color: bin, sqr: int):
+	def __init__(self, color: bin, sqr: int):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -59,7 +42,7 @@ class pawn:
 		if self.color==0:
 			# Checks if move is not a promotion
 			# i.e. either normal, capture, en passant; capture promotions and simple promotions are of a different type (4,5,6,7,14,15,16,17)
-			if move[1]==0 or move[1]==1 or move[1]==3:
+			if move[1] in [0,1,2,3]:
 				new_exp_pos[move[0]]='P'
 			# If it is a promotion, which promotion?
 			else:
@@ -78,7 +61,7 @@ class pawn:
 		# If it is black, fill with black piece
 		else:
 			# Checks if move is not a promotion
-			if move[1]==0 or move[1]==1 or move[1]==3:
+			if move[1] in [0,1,2,3]:
 				new_exp_pos[move[0]]='p'
 			# If it is a promotion, which promotion?
 			else:
@@ -167,9 +150,9 @@ class pawn:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
+
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
 			assert exp_pos[self.sqr]=='P', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
@@ -251,26 +234,27 @@ class pawn:
 						avl_mov_list.append((self.sqr-16, 2, ))
 
 				# EN PASSANT
-				en_pas_tarq_sqr = util.coord2sqr(en_pas_targ)
-				# Only allow en passant captures of black en passant squares
-				if 16<=en_pas_tarq_sqr<=23:
-					# Exception for edges of board
-					# Queenside exception
-					if self.sqr%8==0:
-						if self.sqr-7==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr-7, 3, ))
+				if en_pas_targ!='-':
+					en_pas_targ_sqr = util.coord2sqr(en_pas_targ)
+					# Only allow en passant captures of black en passant squares
+					if 16<=en_pas_targ_sqr<=23:
+						# Exception for edges of board
+						# Queenside exception
+						if self.sqr%8==0:
+							if self.sqr-7==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr-7, 3, ))
 
-					# Kingside exception	
-					elif (self.sqr+1)%8==0:
-						if self.sqr-9==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr-9, 3, ))
+						# Kingside exception	
+						elif (self.sqr+1)%8==0:
+							if self.sqr-9==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr-9, 3, ))
 
-					# Ordinary captures
-					else:
-						if self.sqr-7==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr-7, 3, ))
-						if self.sqr-9==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr-9, 3, ))
+						# Ordinary captures
+						else:
+							if self.sqr-7==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr-7, 3, ))
+							if self.sqr-9==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr-9, 3, ))
 		
 		# Generate black pawn moves if black
 		else:
@@ -344,26 +328,27 @@ class pawn:
 						avl_mov_list.append((self.sqr+16, 2, ))
 
 				# EN PASSANT
-				en_pas_tarq_sqr = util.coord2sqr(en_pas_targ)
-				# Only allow en passant captures of white en passant squares
-				if 40<=en_pas_tarq_sqr<=47:
-					# Exception for edges of board
-					# Queenside exception
-					if self.sqr%8==0:
-						if self.sqr+9==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr+9, 3, ))
+				if en_pas_targ!='-':
+					en_pas_targ_sqr = util.coord2sqr(en_pas_targ)
+					# Only allow en passant captures of white en passant squares
+					if 40<=en_pas_targ_sqr<=47:
+						# Exception for edges of board
+						# Queenside exception
+						if self.sqr%8==0:
+							if self.sqr+9==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr+9, 3, ))
 
-					# Kingside exception	
-					elif (self.sqr+1)%8==0:
-						if self.sqr+7==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr+7, 3, ))
+						# Kingside exception	
+						elif (self.sqr+1)%8==0:
+							if self.sqr+7==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr+7, 3, ))
 
-					# Ordinary captures
-					else:
-						if self.sqr+7==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr+7, 3, ))
-						if self.sqr+9==en_pas_tarq_sqr:
-							avl_mov_list.append((self.sqr+9, 3, ))
+						# Ordinary captures
+						else:
+							if self.sqr+7==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr+7, 3, ))
+							if self.sqr+9==en_pas_targ_sqr:
+								avl_mov_list.append((self.sqr+9, 3, ))
 
 		# Go through generated move list and see if:
 		#  1. It is a discovered check;
@@ -376,9 +361,8 @@ class pawn:
 
 class rook:
 
-	def __init__(self, name, color, sqr):
+	def __init__(self, color, sqr):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -484,9 +468,9 @@ class rook:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
+
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
 			assert exp_pos[self.sqr]=='R', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
@@ -642,9 +626,8 @@ class rook:
 
 class bishop:
 
-	def __init__(self, name, color, sqr):
+	def __init__(self, color, sqr):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -734,10 +717,8 @@ class bishop:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
@@ -1010,9 +991,8 @@ class knight:
 		
 		knight_mov_list.append(moves)
 
-	def __init__(self, name, color, sqr):
+	def __init__(self, color, sqr):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -1102,10 +1082,8 @@ class knight:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
@@ -1145,9 +1123,8 @@ class knight:
 
 class queen:
 
-	def __init__(self, name, color, sqr):
+	def __init__(self, color, sqr):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -1237,10 +1214,8 @@ class queen:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
@@ -1541,9 +1516,8 @@ class queen:
 
 class king:
 
-	def __init__(self, name, color, sqr):
+	def __init__(self, color, sqr):
 		assert 0<=sqr<=63 and isinstance(sqr,int), "PC_POS_ERR: Piece position must be an integer between 0 and 63."
-		self.name = name
 		self.color = color
 		self.sqr = sqr
 
@@ -1669,10 +1643,8 @@ class king:
 
 		return new_exp_fen
 
-	def avl_movs(self, fen):
-		pieces_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(fen)
-
-		exp_pos = util.expand_piece_pos(pieces_pos)
+	def avl_movs(self, efen):
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
 		if self.color==0:
@@ -1708,11 +1680,11 @@ class king:
 					avl_mov_list.append((target_sqr,1,))
 
 			# Castling short
-			if 'K' in castl_avl:
+			if 'K' in castl_avl and exp_pos[61]=='u' and exp_pos[62]=='u':
 				avl_mov_list.append((62,8,))
 
 			# Castling long
-			if 'Q' in castl_avl:
+			if 'Q' in castl_avl and exp_pos[57]=='u' and exp_pos[58]=='u' and exp_pos[59]=='u':
 				avl_mov_list.append((58,9,))
 
 		# Generate black moves if black			
@@ -1741,11 +1713,11 @@ class king:
 					avl_mov_list.append((target_sqr,1,))
 
 			# Castling short
-			if 'k' in castl_avl:
+			if 'k' in castl_avl and exp_pos[5]=='u' and exp_pos[6]=='u':
 				avl_mov_list.append((6,8,))
 
 			# Castling long
-			if 'q' in castl_avl:
+			if 'q' in castl_avl and exp_pos[1]=='u' and exp_pos[2]=='u' and exp_pos[3]=='u':
 				avl_mov_list.append((2,9,))
 		return avl_mov_list
 
