@@ -131,53 +131,53 @@ def translate_move(move):
 	if move[0].color==0:
 		# Pawn
 		if isinstance(move[0],pcs.pawn):
-			output=sqr2coord(move[0].sqr)+' P->'+sqr2coord(move[1][0])
+			output='P '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Rook
 		elif isinstance(move[0],pcs.rook):
-			output=sqr2coord(move[0].sqr)+' R->'+sqr2coord(move[1][0])
+			output='R '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Bishop
 		elif isinstance(move[0],pcs.bishop):
-			output=sqr2coord(move[0].sqr)+' B->'+sqr2coord(move[1][0])
+			output='B '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Knight
 		elif isinstance(move[0],pcs.knight):
-			output=sqr2coord(move[0].sqr)+' K->'+sqr2coord(move[1][0])
+			output='N '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Queen
 		elif isinstance(move[0],pcs.queen):
-			output=sqr2coord(move[0].sqr)+' Q->'+sqr2coord(move[1][0])
+			output='Q '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# King
 		elif isinstance(move[0],pcs.king):
-			output=sqr2coord(move[0].sqr)+' K->'+sqr2coord(move[1][0])
+			output='K '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 
 	else:
 		# Pawn
 		if isinstance(move[0],pcs.pawn):
-			output=sqr2coord(move[0].sqr)+' p->'+sqr2coord(move[1][0])
+			output='p '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Rook
 		elif isinstance(move[0],pcs.rook):
-			output=sqr2coord(move[0].sqr)+' r->'+sqr2coord(move[1][0])
+			output='r '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Bishop
 		elif isinstance(move[0],pcs.bishop):
-			output=sqr2coord(move[0].sqr)+' b->'+sqr2coord(move[1][0])
+			output='b '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Knight
 		elif isinstance(move[0],pcs.knight):
-			output=sqr2coord(move[0].sqr)+' k->'+sqr2coord(move[1][0])
+			output='n '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# Queen
 		elif isinstance(move[0],pcs.queen):
-			output=sqr2coord(move[0].sqr)+' q->'+sqr2coord(move[1][0])
+			output='q '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 		# King
 		elif isinstance(move[0],pcs.king):
-			output=sqr2coord(move[0].sqr)+' k->'+sqr2coord(move[1][0])
+			output='k '+sqr2coord(move[0].sqr)+'->'+sqr2coord(move[1][0])
 			output=output+'('+str(move[1][1])+')'
 
 	return output

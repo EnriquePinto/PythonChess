@@ -47,7 +47,7 @@ class board:
 			elif self.exp_pos[i]=='k':
 				self.black_pieces.append(pcs.king(1,i))
 
-	def avl_movs(self):
+	def avl_movs(self,check_legality=True):
 		# Returns moves in the format (piece_object,move)
 		# "move" is a tuple: (target square, type of move)
 
@@ -58,24 +58,74 @@ class board:
 				for move in piece.avl_movs(self.efen):
 					move_list.append((piece,move))
 
-		#Else, generate black moves
+		# Else, generate black moves
 		else:
 			for piece in self.black_pieces:
 				for move in piece.avl_movs(self.efen):
 					move_list.append((piece,move))
 
+		# Add an argument (check_legality=False) to avl_movs to avoid infinite loops during this step!
+		if check_legality:
+			ilegal_list=[]
+			legal_list=[]
+			# Check for ilegal moves and remove them
+			# Creates new board to check for ilegal moves
+			test_brd = board()
+			# Goes through each move and checks if any of them allow a position without a king
+			for move in move_list:
+				# Get position after move
+				test_brd.set(self.efen)
+				new_efen=test_brd.make_move(move)
+				oponent_answers=test_brd.avl_movs(check_legality=False)
+				# Goes through each oponent answer and checks for a position without either king
+				# Set ilegal flag as false, if move is deemed ilegal then set flag
+				ilegal_flag=False
+				for answer in oponent_answers:
+					ans_pos,_,_,_,_,_ = util.read_fen(test_brd.preview_move(answer))
+					# If any king is missing remove the move from list
+					if ('k' not in ans_pos) or ('K' not in ans_pos):
+						ilegal_list.append(move)
+						ilegal_flag=True
+						break
+				# If no king capture was found, append to legal list
+				if not ilegal_flag:
+					legal_list.append(move)
+			# print(ilegal_list)
+			# print('{} suggested ilegal moves'.format(len(ilegal_list)))
+			# for move in ilegal_list:
+			# 	print(move)
+
+			return legal_list
+
+		# # Reset to current position
+		# self.set(saved_efen)
+
 		return move_list
 
 	def print_avl_moves(self):
+		cnt = 0
 		for move in self.avl_movs():
-			print(util.translate_move(move), end='; ')
+			print(str(cnt)+'.',util.translate_move(move))
+			cnt+=1
 		print('')
 
-	def make_move(self, move):
-		new_move=move[0].move_piece(move[1],self.efen)
-		self.set(new_move)
-		return new_move
 
+	def preview_move(self, move):
+		"""
+		Just return the move output without changing object attributes
+		"""
+		return move[0].move_piece(move[1],self.efen)
+
+	def make_move(self, move):
+		"""
+		Make the move and update object attributes
+		"""
+		new_efen=move[0].move_piece(move[1],self.efen)
+		self.set(new_efen)
+		return new_efen
+
+	def manual_move(self, move):
+		pass
 # A board object is to be used in every piece object instance to identify legal moves and checks!
 # 	-The actual board object where moves will be made is to be called 'main_board'
 # 	-The local instance of a board object in a piece object is to be called 'local_board'
