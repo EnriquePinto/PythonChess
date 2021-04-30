@@ -30,7 +30,7 @@ import brd
 # 	Captures: All capture moves have the first digit of move type equals 1
 #	Attacks: TO DO!
 
-start_fen='rnbqkbnr/pppppppp/8/1Q5B/1q5b/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+start_fen='rnbqk1nr/pppp1ppp/4p3/8/1b1P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 1'
 EFEN=util.fen2efen(start_fen)
 
 
@@ -42,15 +42,11 @@ board1.set(EFEN)
 # 1st move
 mov_list1=board1.avl_movs()
 board1.print_avl_moves()
-new_move1=board1.make_move(mov_list1[24])
+# board1.print_control()
+new_move1=board1.make_move(mov_list1[5])
 util.print_fen(util.efen2fen(new_move1))
 
-# 2nd move
-mov_list2=board1.avl_movs()
-board1.print_avl_moves()
-new_move2=board1.make_move(mov_list2[13])
-util.print_fen(util.efen2fen(new_move2))
-
+# b
 # # 3rd move
 # mov_list3=board1.avl_movs()
 # board1.print_avl_moves()

@@ -2,12 +2,9 @@
 # All piece classes contain the following methods:
 # 	__init__: starts up the piece name, color, and square
 #   move_piece: from an eFEN and a legal move returns eFEN for a position in which such move was made
-#	avl_movs: from a FEN code returns all legal moves for that piece (first verifying the FEN code agrees with the local piece position)
+#	avl_movs: from a eFEN code returns all legal moves for that piece (first verifying the FEN code agrees with the local piece position)
 
 
-# TO DO: Go through all other pieces in current position and verify if there are discovered checks
-# 	It will be more convenient to check if a square is attacked (instead of the king), i.e. see if king is in an attacked square to look for checks,
-# 	since it is a more flexible construct and allows for easier legal castling verification
 
 
 import util
@@ -150,7 +147,7 @@ class pawn:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 
 		# Asserts that local piece parameters agree with with input position
@@ -161,7 +158,7 @@ class pawn:
 		# If pawn is white, move upwards in the board (decreases number)
 		# If pawn is black, move downwards in the board (increases number)		
 		avl_mov_list = []
-
+		controlled_squares = [] # list of all controlled squares
 		# Generate white pawn moves if white
 		if self.color==0:
 			# PROMOTION CHECK
@@ -179,24 +176,30 @@ class pawn:
 				# Exception for edges of board
 				# Queenside exception
 				if self.sqr%8==0:	
-					if exp_pos[self.sqr-7] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-7] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr-7, i, ))
+					controlled_squares.append(self.sqr-7)
+
 
 				# Kingside exception	
 				elif (self.sqr+1)%8==0:
-					if exp_pos[self.sqr-9] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-9] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr-9, i, ))
+					controlled_squares.append(self.sqr-9)
 
 				# Ordinary captures
 				else:
-					if exp_pos[self.sqr-7] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-7] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr-7, i, ))
-					if exp_pos[self.sqr-9] not in ['u','K','Q','B','N','P']:
+					controlled_squares.append((self.sqr-7, i, ))
+
+					if exp_pos[self.sqr-9] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
-							avl_mov_list.append((self.sqr-9, i, ))
+							avl_mov_list.append(self.sqr-9)
+					controlled_squares.append((self.sqr-9, i, ))
 
 			# If move is not a promotion, generate normal moves
 			else:
@@ -211,20 +214,25 @@ class pawn:
 				# Exception for edges of board
 				# Queenside exception
 				if self.sqr%8==0:
-					if exp_pos[self.sqr-7] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-7] not in ['u','K','Q','R','B','N','P']:
 						avl_mov_list.append((self.sqr-7, 1, ))
+					controlled_squares.append(self.sqr-7)
 
 				# Kingside exception	
 				elif (self.sqr+1)%8==0:
-					if exp_pos[self.sqr-9] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-9] not in ['u','K','Q','R','B','N','P']:
 						avl_mov_list.append((self.sqr-9, 1, ))
+					controlled_squares.append(self.sqr-9)
 
 				# Ordinary captures
 				else:
-					if exp_pos[self.sqr-7] not in ['u','K','Q','B','N','P']:
+					if exp_pos[self.sqr-7] not in ['u','K','Q','R','B','N','P']:
 						avl_mov_list.append((self.sqr-7, 1, ))
-					if exp_pos[self.sqr-9] not in ['u','K','Q','B','N','P']:
+					controlled_squares.append(self.sqr-7)
+
+					if exp_pos[self.sqr-9] not in ['u','K','Q','R','B','N','P']:
 						avl_mov_list.append((self.sqr-9, 1, ))
+					controlled_squares.append(self.sqr-9)
 
 				# DOUBLE MOVES
 				# Checks if pawn is in any of the initial squares
@@ -273,24 +281,29 @@ class pawn:
 				# Exception for edges of board
 				# Queenside exception
 				if self.sqr%8==0:	
-					if exp_pos[self.sqr+9] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+9] not in ['u','k','q','r','b','n','p']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr+9, i, ))
+					controlled_squares.append(self.sqr+9)
 
 				# Kingside exception	
 				elif (self.sqr+1)%8==0:
-					if exp_pos[self.sqr+7] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+7] not in ['u','k','q','r','b','n','p']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr+7, i, ))
+					controlled_squares.append(self.sqr+7)
 
 				# Ordinary captures
 				else:
-					if exp_pos[self.sqr+7] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+7] not in ['u','k','q','r','b','n','p']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr+7, i, ))
-					if exp_pos[self.sqr+9] not in ['u','k','q','b','n','p']:
+					controlled_squares.append(self.sqr+7)
+
+					if exp_pos[self.sqr+9] not in ['u','k','q','r','b','n','p']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr+9, i, ))
+					controlled_squares.append(self.sqr+9)
 
 			# If move is not a promotion, generate normal moves
 			else:
@@ -305,20 +318,25 @@ class pawn:
 				# Exception for edges of board
 				# Queenside exception
 				if self.sqr%8==0:
-					if exp_pos[self.sqr+9] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+9] not in ['u','k','q','r','b','n','p']:
 						avl_mov_list.append((self.sqr+9, 1, ))
+					controlled_squares.append(self.sqr+9)
 
 				# Kingside exception	
 				elif (self.sqr+1)%8==0:
-					if exp_pos[self.sqr+7] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+7] not in ['u','k','q','r','b','n','p']:
 						avl_mov_list.append((self.sqr+7, 1, ))
+					controlled_squares.append(self.sqr+9)
 
 				# Ordinary captures
 				else:
-					if exp_pos[self.sqr+7] not in ['u','k','q','b','n','p']:
+					if exp_pos[self.sqr+7] not in ['u','k','q','r','b','n','p']:
 						avl_mov_list.append((self.sqr+7, 1, ))
-					if exp_pos[self.sqr+9] not in ['u','k','q','b','n','p']:
+					controlled_squares.append(self.sqr+7)
+
+					if exp_pos[self.sqr+9] not in ['u','k','q','r','b','n','p']:
 						avl_mov_list.append((self.sqr+9, 1, ))
+					controlled_squares.append(self.sqr+9)
 
 				# DOUBLE MOVES
 				# Checks if pawn is in any of the initial squares
@@ -349,15 +367,10 @@ class pawn:
 								avl_mov_list.append((self.sqr+7, 3, ))
 							if self.sqr+9==en_pas_targ_sqr:
 								avl_mov_list.append((self.sqr+9, 3, ))
-
-		# Go through generated move list and see if:
-		#  1. It is a discovered check;
-		#  2. It is an ilegal move (would leave own king in check)
-
-
-
-				
-		return avl_mov_list
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 class rook:
 
@@ -468,7 +481,7 @@ class rook:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 
 		# Asserts that local piece parameters agree with with input position
@@ -478,6 +491,7 @@ class rook:
 			assert exp_pos[self.sqr]=='r', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
 
 		avl_mov_list = []
+		controlled_squares = []
 
 		# Generate white moves if white (necessary distinction since one cannot capture one's own piece)
 		if self.color==0:
@@ -489,6 +503,7 @@ class rook:
 				if target_sqr<0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -499,6 +514,7 @@ class rook:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# DOWNWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside white edge board range
@@ -506,6 +522,7 @@ class rook:
 				if target_sqr>63:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -516,6 +533,7 @@ class rook:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# KINGSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
@@ -523,6 +541,7 @@ class rook:
 				if (target_sqr)%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -533,6 +552,7 @@ class rook:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# QUEENSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
@@ -540,6 +560,7 @@ class rook:
 				if (target_sqr)%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -560,57 +581,7 @@ class rook:
 				if target_sqr<0:
 					break
 				else:
-					# Check if normal move (target square is empty)
-					if exp_pos[target_sqr]=='u':
-						avl_mov_list.append((target_sqr,0,))
-					# Stop if blocked by friendly piece
-					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						break
-					# Generate capture if finds enemy piece and stop
-					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1,))
-						break
-			# DOWNWARDS MOVES
-			for i in range(1,8):
-				# Stop if outside white edge board range
-				target_sqr = self.sqr+8*i
-				if target_sqr>63:
-					break
-				else:
-					# Check if normal move (target square is empty)
-					if exp_pos[target_sqr]=='u':
-						avl_mov_list.append((target_sqr,0,))
-					# Stop if blocked by friendly piece
-					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						break
-					# Generate capture if finds enemy piece and stop
-					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1,))
-						break
-			# KINGSIDEWARDS MOVES
-			for i in range(1,8):
-				# Stop if outside kingside edge board range
-				target_sqr = self.sqr+i
-				if (target_sqr)%8==0:
-					break
-				else:
-					# Check if normal move (target square is empty)
-					if exp_pos[target_sqr]=='u':
-						avl_mov_list.append((target_sqr,0,))
-					# Stop if blocked by friendly piece
-					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
-						break
-					# Generate capture if finds enemy piece and stop
-					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
-						avl_mov_list.append((target_sqr,1,))
-						break
-			# QUEENSIDEWARDS MOVES
-			for i in range(1,8):
-				# Stop if outside kingside edge board range
-				target_sqr = self.sqr-i
-				if (target_sqr)%8==7:
-					break
-				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -622,7 +593,67 @@ class rook:
 						avl_mov_list.append((target_sqr,1,))
 						break
 
-		return avl_mov_list
+			# DOWNWARDS MOVES
+			for i in range(1,8):
+				# Stop if outside white edge board range
+				target_sqr = self.sqr+8*i
+				if target_sqr>63:
+					break
+				else:
+					controlled_squares.append(target_sqr)
+					# Check if normal move (target square is empty)
+					if exp_pos[target_sqr]=='u':
+						avl_mov_list.append((target_sqr,0,))
+					# Stop if blocked by friendly piece
+					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+						break
+					# Generate capture if finds enemy piece and stop
+					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+						avl_mov_list.append((target_sqr,1,))
+						break
+
+			# KINGSIDEWARDS MOVES
+			for i in range(1,8):
+				# Stop if outside kingside edge board range
+				target_sqr = self.sqr+i
+				if (target_sqr)%8==0:
+					break
+				else:
+					controlled_squares.append(target_sqr)
+					# Check if normal move (target square is empty)
+					if exp_pos[target_sqr]=='u':
+						avl_mov_list.append((target_sqr,0,))
+					# Stop if blocked by friendly piece
+					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+						break
+					# Generate capture if finds enemy piece and stop
+					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+						avl_mov_list.append((target_sqr,1,))
+						break
+
+			# QUEENSIDEWARDS MOVES
+			for i in range(1,8):
+				# Stop if outside kingside edge board range
+				target_sqr = self.sqr-i
+				if (target_sqr)%8==7:
+					break
+				else:
+					controlled_squares.append(target_sqr)
+					# Check if normal move (target square is empty)
+					if exp_pos[target_sqr]=='u':
+						avl_mov_list.append((target_sqr,0,))
+					# Stop if blocked by friendly piece
+					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+						break
+					# Generate capture if finds enemy piece and stop
+					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+						avl_mov_list.append((target_sqr,1,))
+						break
+
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 class bishop:
 
@@ -717,7 +748,7 @@ class bishop:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
@@ -727,6 +758,7 @@ class bishop:
 			assert exp_pos[self.sqr]=='b', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
 		
 		avl_mov_list = []
+		controlled_squares = []
 
 		# Generate white moves if white
 		if self.color==0:
@@ -737,6 +769,7 @@ class bishop:
 				if target_sqr<0 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -755,6 +788,7 @@ class bishop:
 				if target_sqr<0 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -773,6 +807,7 @@ class bishop:
 				if target_sqr>63 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -791,6 +826,7 @@ class bishop:
 				if target_sqr>63 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -811,6 +847,7 @@ class bishop:
 				if target_sqr<0 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -829,6 +866,7 @@ class bishop:
 				if target_sqr<0 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -847,6 +885,7 @@ class bishop:
 				if target_sqr>63 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -865,6 +904,7 @@ class bishop:
 				if target_sqr>63 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -876,7 +916,10 @@ class bishop:
 						avl_mov_list.append((target_sqr,1,))
 						break
 
-		return avl_mov_list
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 class knight:
 
@@ -1082,7 +1125,7 @@ class knight:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
@@ -1092,34 +1135,43 @@ class knight:
 			assert exp_pos[self.sqr]=='n', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
 		
 		avl_mov_list = []
+		controlled_squares = []
 
 		# Generate white moves if white
 		if self.color==0:
 			for move in knight.knight_mov_list[self.sqr]:
 				target_sqr = self.sqr+move
-				# Don't include move if occupied by friendly piece
+				controlled_squares.append(target_sqr)
+				# Generate normal move if square is free
 				if exp_pos[target_sqr]=='u':
 					avl_mov_list.append((target_sqr,0,))
+				# Don't include move if occupied by friendly piece
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 					pass
 				# Generate capture if finds enemy piece
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 					avl_mov_list.append((target_sqr,1,))
+					
 
 		# Generate black moves if black			
 		else:
 			for move in knight.knight_mov_list[self.sqr]:
 				target_sqr = self.sqr+move
-				# Don't include move if occupied by friendly piece
+				controlled_squares.append(target_sqr)
+				# Generate normal move if square is free
 				if exp_pos[target_sqr]=='u':
 					avl_mov_list.append((target_sqr,0,))
+				# Don't include move if occupied by friendly piece
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 					pass
 				# Generate capture if finds enemy piece
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 					avl_mov_list.append((target_sqr,1,))
 
-		return avl_mov_list
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 class queen:
 
@@ -1169,7 +1221,7 @@ class queen:
 		else:
 			# Check by color
 			if self.color==0:
-				# White bishops remove castling rights by capturing oponent rook
+				# White queens remove castling rights by capturing oponent rook
 				# Rights are the same in case no conditional is triggered
 				new_castl_avl = castl_avl
 				# Capturing oponent rook
@@ -1192,7 +1244,7 @@ class queen:
 				elif 'Q' in castl_avl and move[0]==56 and move[1]==1:
 					new_castl_avl = new_castl_avl.replace('Q','')
 
-		# Any bishop move removes en passant target
+		# Any queen move removes en passant target
 		new_en_pas_targ='-'
 
 		# Increments half move clock if no pawn advance or capture has been made
@@ -1214,7 +1266,7 @@ class queen:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
@@ -1224,6 +1276,7 @@ class queen:
 			assert exp_pos[self.sqr]=='q', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
 		
 		avl_mov_list = []
+		controlled_squares = []
 
 		# Generate white moves if white
 		if self.color==0:
@@ -1235,6 +1288,7 @@ class queen:
 				if target_sqr<0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1245,6 +1299,7 @@ class queen:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# DOWNWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside white edge board range
@@ -1252,6 +1307,7 @@ class queen:
 				if target_sqr>63:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1262,13 +1318,15 @@ class queen:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# KINGSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
 				target_sqr = self.sqr+i
 				if (target_sqr)%8==0:
-					break
+					break	
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1279,6 +1337,7 @@ class queen:
 					elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# QUEENSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
@@ -1286,6 +1345,7 @@ class queen:
 				if (target_sqr)%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1304,6 +1364,7 @@ class queen:
 				if target_sqr<0 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1322,6 +1383,7 @@ class queen:
 				if target_sqr<0 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1340,6 +1402,7 @@ class queen:
 				if target_sqr>63 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1358,6 +1421,7 @@ class queen:
 				if target_sqr>63 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1378,6 +1442,7 @@ class queen:
 				if target_sqr<0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1388,6 +1453,7 @@ class queen:
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# DOWNWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside white edge board range
@@ -1395,6 +1461,7 @@ class queen:
 				if target_sqr>63:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1405,6 +1472,7 @@ class queen:
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# KINGSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
@@ -1412,6 +1480,7 @@ class queen:
 				if (target_sqr)%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1422,6 +1491,7 @@ class queen:
 					elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 						avl_mov_list.append((target_sqr,1,))
 						break
+
 			# QUEENSIDEWARDS MOVES
 			for i in range(1,8):
 				# Stop if outside kingside edge board range
@@ -1429,6 +1499,7 @@ class queen:
 				if (target_sqr)%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1447,6 +1518,7 @@ class queen:
 				if target_sqr<0 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1465,6 +1537,7 @@ class queen:
 				if target_sqr<0 or target_sqr%8==7:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1483,6 +1556,7 @@ class queen:
 				if target_sqr>63 or target_sqr%8==0:
 					break
 				else:
+					controlled_squares.append(target_sqr)
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1501,6 +1575,7 @@ class queen:
 				if target_sqr>63 or target_sqr%8==7:
 					break
 				else:
+					
 					# Check if normal move (target square is empty)
 					if exp_pos[target_sqr]=='u':
 						avl_mov_list.append((target_sqr,0,))
@@ -1512,7 +1587,10 @@ class queen:
 						avl_mov_list.append((target_sqr,1,))
 						break
 
-		return avl_mov_list
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 class king:
 
@@ -1643,7 +1721,7 @@ class king:
 
 		return new_exp_fen
 
-	def avl_movs(self, efen):
+	def avl_movs(self, efen, return_ctrl_sqr=False):
 		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 		
 		# Asserts that local piece parameters agree with with input position
@@ -1653,6 +1731,7 @@ class king:
 			assert exp_pos[self.sqr]=='k', "PC_POS_MISMATCH_ERR: Position does not agree with local piece type and location parameters."
 		
 		avl_mov_list = []
+		controlled_squares = []
 
 		# Generate white moves if white
 		if self.color==0:
@@ -1674,6 +1753,7 @@ class king:
 					avl_mov_list.append((target_sqr,0,))
 				# Stop if blocked by friendly piece
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
+					controlled_squares.append(target_sqr)
 					pass
 				# Generate capture if finds enemy piece and stop
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
@@ -1707,6 +1787,7 @@ class king:
 					avl_mov_list.append((target_sqr,0,))
 				# Stop if blocked by friendly piece
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
+					controlled_squares.append(target_sqr)
 					pass
 				# Generate capture if finds enemy piece and stop
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
@@ -1719,7 +1800,11 @@ class king:
 			# Castling long
 			if 'q' in castl_avl and exp_pos[1]=='u' and exp_pos[2]=='u' and exp_pos[3]=='u':
 				avl_mov_list.append((2,9,))
-		return avl_mov_list
+
+		if return_ctrl_sqr:
+			return avl_mov_list, controlled_squares
+		else:
+			return avl_mov_list
 
 # avl_movs workflow: 
 #	1. Interpret the FEN

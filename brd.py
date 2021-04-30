@@ -2,6 +2,7 @@
 
 import util
 import pcs
+import numpy as np
 
 start_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
@@ -47,22 +48,34 @@ class board:
 			elif self.exp_pos[i]=='k':
 				self.black_pieces.append(pcs.king(1,i))
 
-	def avl_movs(self,check_legality=True):
+	def avl_movs(self,check_legality=True, extra_output=False, output_ctrl_sqrs=False):
 		# Returns moves in the format (piece_object,move)
 		# "move" is a tuple: (target square, type of move)
 
 		move_list=[]
+		controlled_list=[]
+
 		# Generate white moves if white is to move
 		if self.clr_to_move=='w':
 			for piece in self.white_pieces:
-				for move in piece.avl_movs(self.efen):
+				piece_moves, piece_controlled_sqrs = piece.avl_movs(self.efen, return_ctrl_sqr=True)
+				# Actual moves
+				for move in piece_moves:
 					move_list.append((piece,move))
+				# Squares that are controlled (excluding captures and moves)
+				for square in piece_controlled_sqrs:
+					controlled_list.append(square)
 
 		# Else, generate black moves
 		else:
 			for piece in self.black_pieces:
-				for move in piece.avl_movs(self.efen):
+				piece_moves, piece_controlled_sqrs = piece.avl_movs(self.efen, return_ctrl_sqr=True)
+				# Actual moves
+				for move in piece_moves:
 					move_list.append((piece,move))
+				# Squares that are controlled (excluding captures and moves)
+				for square in piece_controlled_sqrs:
+					controlled_list.append(square)
 
 		# Add an argument (check_legality=False) to avl_movs to avoid infinite loops during this step!
 		if check_legality:
@@ -94,21 +107,32 @@ class board:
 			# print('{} suggested ilegal moves'.format(len(ilegal_list)))
 			# for move in ilegal_list:
 			# 	print(move)
-
-			return legal_list
+			if extra_output:
+				if output_ctrl_sqrs:
+					return legal_list, controlled_list, ilegal_list, len(legal_list)
+				else:
+					return legal_list, ilegal_list, len(legal_list)
+			else:
+				if output_ctrl_sqrs:
+					legal_list, controlled_list
+				else:
+					return legal_list
 
 		# # Reset to current position
 		# self.set(saved_efen)
+		if output_ctrl_sqrs:
+			return move_list,  controlled_list
+		else:
+			return move_list
 
-		return move_list
-
-	def print_avl_moves(self):
+	def print_avl_moves(self, n_col=5):
 		cnt = 0
 		for move in self.avl_movs():
-			print(str(cnt)+'.',util.translate_move(move))
+			print('  '+"{:02d}".format(cnt)+'.',util.translate_move(move),end='')
+			if cnt%n_col==4:
+				print()
 			cnt+=1
 		print('')
-
 
 	def preview_move(self, move):
 		"""
@@ -124,7 +148,37 @@ class board:
 		self.set(new_efen)
 		return new_efen
 
+	def board_control(self):
+
+		# TO DO: Generate control vectors for both colors in current position.
+		control_vec=np.zeros(64)
+		_,controlled_sqrs = self.avl_movs(output_ctrl_sqrs=True)
+		for sqr in controlled_sqrs:
+			control_vec[sqr]+=1
+		return control_vec
+
+	def print_control(self):
+		"""
+		Prints board control for current board attribute
+		"""
+		control_vec=self.board_control()
+
+		print('')
+		# Prints board
+		for i in range(64):
+			# New line conditional
+			print('|','\u0305',int(control_vec[i]), end='', sep='')
+			if (i)%8==7:
+				print('|')
+
+		print(' \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305    ')
+		print('')
+
+
 	def manual_move(self, move):
+		"""
+		Makes the move with: (origin, target, type)
+		"""
 		pass
 # A board object is to be used in every piece object instance to identify legal moves and checks!
 # 	-The actual board object where moves will be made is to be called 'main_board'
