@@ -77,7 +77,7 @@ class board:
 				for square in piece_controlled_sqrs:
 					controlled_list.append(square)
 
-		# Add an argument (check_legality=False) to avl_movs to avoid infinite loops during this step!
+		# Use the argument (check_legality=False) in avl_movs to avoid infinite loops during this step!
 		if check_legality:
 			ilegal_list=[]
 			legal_list=[]
@@ -103,10 +103,7 @@ class board:
 				# If no king capture was found, append to legal list
 				if not ilegal_flag:
 					legal_list.append(move)
-			# print(ilegal_list)
-			# print('{} suggested ilegal moves'.format(len(ilegal_list)))
-			# for move in ilegal_list:
-			# 	print(move)
+			# Return extra information if requested
 			if extra_output:
 				if output_ctrl_sqrs:
 					return legal_list, controlled_list, ilegal_list, len(legal_list)
@@ -118,8 +115,7 @@ class board:
 				else:
 					return legal_list
 
-		# # Reset to current position
-		# self.set(saved_efen)
+		# If check_legality==False, then generate pseudo legal moves
 		if output_ctrl_sqrs:
 			return move_list,  controlled_list
 		else:
@@ -149,29 +145,63 @@ class board:
 		return new_efen
 
 	def board_control(self):
+		# Current player
+		control_vec1=np.zeros(64)
+		_,controlled_sqrs1 = self.avl_movs(output_ctrl_sqrs=True)
+		for sqr in controlled_sqrs1:
+			control_vec1[sqr]+=1
+		# Save the current EFEN and switch who's to move
+		saved_efen=self.efen
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(self.efen)
+		if clr_to_move=='w':
+			clr_to_move='b'
+		else:
+			clr_to_move='w'
+		new_efen=exp_pos+' '+clr_to_move+' '+castl_avl+' '+en_pas_targ+' '+half_mov_clk+' '+mov_clk
+		self.set(new_efen)
+		# Next player
+		control_vec2=np.zeros(64)
+		_,controlled_sqrs2 = self.avl_movs(output_ctrl_sqrs=True)
+		for sqr in controlled_sqrs2:
+			control_vec2[sqr]+=1
 
-		# TO DO: Generate control vectors for both colors in current position.
-		control_vec=np.zeros(64)
-		_,controlled_sqrs = self.avl_movs(output_ctrl_sqrs=True)
-		for sqr in controlled_sqrs:
-			control_vec[sqr]+=1
-		return control_vec
+		# Reset self.efen
+		self.set(saved_efen)
 
-	def print_control(self):
+		# Identify which one is the black control and which is the white control
+		if clr_to_move=='w':
+			# Return white and black controlled squares
+			return control_vec2, control_vec1
+		else:
+			# Return white and black controlled squares
+			return control_vec1, control_vec2
+
+	def print_control(self, ctrl_clr='a'):
 		"""
 		Prints board control for current board attribute
 		"""
-		control_vec=self.board_control()
+		w_ctrl, b_ctrl=self.board_control()
+
+		if ctrl_clr=='w':
+			control_vec=w_ctrl
+		elif ctrl_clr=='b':
+			control_vec=b_ctrl
+		else:	
+			control_vec=w_ctrl-b_ctrl
 
 		print('')
 		# Prints board
 		for i in range(64):
 			# New line conditional
-			print('|','\u0305',int(control_vec[i]), end='', sep='')
+			if control_vec[i]>=0:\
+				print('|','\u0305',' ',int(control_vec[i]), end='', sep='')
+			else:
+				print('|','\u0305',int(control_vec[i]), end='', sep='')
+			
 			if (i)%8==7:
 				print('|')
 
-		print(' \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305  \u0305    ')
+		print(' \u0305   \u0305   \u0305   \u0305   \u0305   \u0305   \u0305   \u0305    ')
 		print('')
 
 

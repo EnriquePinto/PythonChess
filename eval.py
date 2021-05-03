@@ -4,6 +4,65 @@ import numpy as np
 import brd
 import util
 
+def is_draw(efen_hist):
+	"""
+	Draw checking function, given an array of EFENs (the history of the game), returns 'True' if position is a draw and 'False' if it isn't.
+	Only checks the last position for the 50 move rule and threefold repetition.
+	"""
+	exp_pos_v=[]
+	clr_to_move_v=[] 
+	castl_avl_v=[]
+	en_pas_targ_v=[]
+	half_mov_clk_v=[]
+	mov_clk_v=[]
+
+	# Makes a list out of every entry of each EFEN
+	for efen in efen_hist:
+		exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
+		# Appends to the lists
+		exp_pos_v.append(exp_pos)
+		clr_to_move_v.append(clr_to_move) 
+		castl_avl_v.append(castl_avl)
+		en_pas_targ_v.append(en_pas_targ)
+		half_mov_clk_v.append(half_mov_clk)
+		mov_clk_v.append(mov_clk)
+
+	# Checks draw types in sequence, from the least computationally expensive to the most expensive
+	# DRAW BY 50 MOVE RULE - Check draw by 50 move rule ----------
+	if half_mov_clk_v[-1]>=50:
+		return True
+
+	# INSUFICIENT MATERIAL - Check the following piece combinations
+	# 	1.king versus king
+	#	2.king and bishop versus king
+	#	3.king and knight versus king
+	#	4.king and bishop versus king and bishop with the bishops on the same color.
+
+
+	# DRAW BY REPETITION - Check for threefold repetition ----------
+	# First, creates a vector 'pos_vec' with relevant information for checking for threefold repetition in each position
+	pos_vec=[]
+	for i in range(len(efen_hist)):
+		pos=exp_pos_v[i]+clr_to_move_v[i]+castl_avl_v[i]+en_pas_targ_v[i]
+		pos_vec.append(pos)
+	# Second, we count how many times the last position appears
+	counter=0
+	for pos in pos_vec:
+		if pos==pos_vec[-1]:
+			counter+=1
+		# Return 'True' if current position occured more than thrice
+		if counter>=3:	
+			return True
+
+	# DRAW BY STALEMATE - Check last position for available moves
+	stalemate_brd = brd.board()
+	stalemate_brd.set(efen_hist[-1])
+	n_of_avl_movs=stalemate_brd.avl_movs(check_legality=True, extra_output=True)[2] # Output: (legal_moves, ilegal_moves, how many legal moves)
+	if n_of_avl_movs==0:
+		return 0
+
+	# If all draw types failed, return 'False'
+	return False
 
 # ==> Also needs the position history to check if any position happened 3 times and declare draw by repetition
 
@@ -16,7 +75,6 @@ def std_eval(efen, move_count):
 	# Reads efen
 	exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 
-	# Check draw by 50 move rule
 
 
 	# Material count

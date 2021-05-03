@@ -181,3 +181,11 @@ def translate_move(move):
 			output=output+'('+str(move[1][1])+')'
 
 	return output
+
+def white_or_black(sqr):
+	"""
+	Returns whether a square number is white(0) or black(1) using some clever modulo operations
+	"""
+	return (sqr%8+int(sqr/8))%2
+
+# TO DO: PGN TO EFEN list converter
