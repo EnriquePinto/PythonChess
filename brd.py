@@ -49,7 +49,7 @@ class board:
 				self.black_pieces.append(pcs.king(1,i))
 
 	def avl_movs(self,check_legality=True, extra_output=False, output_ctrl_sqrs=False):
-		# Returns moves in the format (piece_object,move)
+		# Returns moves in the format (piece_object,move, is_check?)
 		# "move" is a tuple: (target square, type of move)
 
 		move_list=[]
@@ -103,7 +103,7 @@ class board:
 				# If no king capture was found, append to legal list
 				if not ilegal_flag:
 					legal_list.append(move)
-			# Return extra information if requested
+			# Return extra information (the ilegal move list, and the length of the legal moves list) if requested
 			if extra_output:
 				if output_ctrl_sqrs:
 					return legal_list, controlled_list, ilegal_list, len(legal_list)
@@ -121,13 +121,65 @@ class board:
 		else:
 			return move_list
 
+	def scan_for_checks(self,move_list):
+		"""
+		Goes through a move list and returns a new list of tuples indicating which are check.																														
+		"""
+		is_check_list=[]	
+		test_brd=board()
+		for move in move_list:
+			# If oponent's king is in a controlled square after the move, then move is a check
+			# Get control squares after move is made
+			test_brd.set(self.preview_move(move))
+			w_ctrl, b_ctrl=test_brd.board_control()
+			# If white just moved, see if black king is in white attacked square
+			if self.clr_to_move=='w':
+				# Loop through pieces and look for the king
+				for piece in self.black_pieces:
+					if isinstance(piece,pcs.king):
+						# Check if king square is controlled by white
+						if w_ctrl[piece.sqr]>0:
+							is_check_list.append(True)
+							break
+						else:
+							is_check_list.append(False)
+							break
+			# If black just moved, see if white king is in white attacked square
+			else:
+				# Loop through pieces and look for the king
+				for piece in self.white_pieces:
+					if isinstance(piece,pcs.king):
+						# Check if king square is controlled by black
+						if b_ctrl[piece.sqr]>0:
+							is_check_list.append(True)
+							break
+						else:
+							is_check_list.append(False)
+							break
+		return is_check_list
+
+	def gen_moves(self):
+		"""
+		Uses the "avl_movs" and the "scan_for_checks" methods to generate 'check aware' move generation.
+		"""
+		avl_movs=self.avl_movs()
+		checks=self.scan_for_checks(avl_movs)
+		output_movs=[]
+		for i in range(len(avl_movs)):
+			output_movs.append((avl_movs[i],checks[i]))
+		return output_movs
+
+
 	def print_avl_moves(self, n_col=5):
-		cnt = 0
-		for move in self.avl_movs():
-			print('  '+"{:02d}".format(cnt)+'.',util.translate_move(move),end='')
-			if cnt%n_col==4:
+		available_moves=self.avl_movs()
+		checks=self.scan_for_checks(available_moves)
+		for i in range(len(available_moves)):
+			if checks[i]==False:
+				print('  '+"{:02d}".format(i)+'.',util.translate_move(available_moves[i])+' ',end='')
+			else:
+				print('  '+"{:02d}".format(i)+'.',util.translate_move(available_moves[i])+'+',end='')
+			if i%n_col==4:
 				print()
-			cnt+=1
 		print('')
 
 	def preview_move(self, move):
@@ -204,11 +256,11 @@ class board:
 		print(' \u0305   \u0305   \u0305   \u0305   \u0305   \u0305   \u0305   \u0305    ')
 		print('')
 
-
 	def manual_move(self, move):
 		"""
 		Makes the move with: (origin, target, type)
 		"""
+		# To do!
 		pass
 # A board object is to be used in every piece object instance to identify legal moves and checks!
 # 	-The actual board object where moves will be made is to be called 'main_board'

@@ -194,12 +194,12 @@ class pawn:
 					if exp_pos[self.sqr-7] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
 							avl_mov_list.append((self.sqr-7, i, ))
-					controlled_squares.append((self.sqr-7, i, ))
+					controlled_squares.append(self.sqr-7)
 
 					if exp_pos[self.sqr-9] not in ['u','K','Q','R','B','N','P']:
 						for i in [14,15,16,17]:
-							avl_mov_list.append(self.sqr-9)
-					controlled_squares.append((self.sqr-9, i, ))
+							avl_mov_list.append((self.sqr-9, i))
+					controlled_squares.append(self.sqr-9)
 
 			# If move is not a promotion, generate normal moves
 			else:
