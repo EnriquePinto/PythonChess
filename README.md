@@ -19,7 +19,12 @@ To do:
 Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 Pieces colors are represented by a bynary digit: 0=white, 1=black
 
-Moves are understood on 2 "scopes": piece level and board level. Piece level moves are a tuple of the form (target square, type of move); while board level moves are also tuples, but of the form (piece object instance, piece level move). A board level move may even be further nested in a tuple which states if the move is a check or not in the following form: (board level move, is check?).
+Moves are understood on 2 "scopes": piece level and board level. 
+
+* Piece level moves are a tuple of the form (target square, type of move); 
+* Board level moves are also tuples, but of the form (piece object instance, piece level move). 
+ 
+A board level move may even be further nested in a tuple which states if the move is a check or not in the following form: (board level move, is check?).
 
 ## Move types: 
 
