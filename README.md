@@ -42,7 +42,7 @@ A board level move may even be further nested in a tuple which states if the mov
 
 14/15/16/17 = capture and promotion to queen/rook/knight/bishop
 			     
-What piece is moving and from whence it is moving is not included in the piece class move output since it can be identified by the '.sqr' and '.name' attributes
+What piece is moving and from whence it is moving is not included in the piece class move output since it can be identified by the '.sqr' and '.clr' attributes
 
 ## Move priority and type identification
 
