@@ -19,7 +19,7 @@ To do:
 Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 Pieces colors are represented by a bynary digit: 0=white, 1=black
 
-Each piece move output is a tuple: (target square, type of move, is check?)
+Moves are understood on 2 "scopes": piece level and board level. Piece level moves are a tuple of the form (target square, type of move); while board level moves are also tuples, but of the form (piece object instance, piece level move). A board level move may even be further nested in a tuple which states if the move is a check or not in the following form: (board level move, is check?).
 
 ## Move types: 
 
@@ -44,10 +44,8 @@ What piece is moving and from whence it is moving is not included in the piece c
 Identifying checks, captures, attacks:
 * Checks: All checks have the "is check?" field equals "True"
 * Captures: All capture moves have the first digit of move type equals 1
-* Attacks: TO DO!
 
 ---
 
 Remarks:
-* It may actually be useful to generate pseudolegal moves and attach a very high evaluation penalty for losing the king. This alone wouldn't eliminate the generation of ilegal moves (breaking of absolute pins, for example), but would very much eliminate these moves from any interesting sequence of moves in the alpha-beta pruning, since they lose immediately.
 * Generating moves through precalculated stored bitboards and using magic bitboards and masking is considered to be the vastly superior option for move generation speed benchmarks. These generated moves need to be verified for legality (or not, see above bulletpoint) and its properties (check, capture, attack, pin, etc.) considered for move ordering reasons. Future updates may include calculation of magic bitboards and an overhaul of move generation.
