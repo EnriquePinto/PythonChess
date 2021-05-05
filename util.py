@@ -1,7 +1,7 @@
 # File containing all frequently used functions for manipulating board and square position data
 # Enrique T. R. Pinto 2021
 
-import pcs
+import pcs,brd
 
 # UNICODE CHESS PIECES:
 # wK = U+2654 / wQ = U+2655 / wR = U+2656 / wB = U+2657 / wN = U+2658 / wp = U+2659
@@ -187,5 +187,30 @@ def white_or_black(sqr):
 	Returns whether a square number is white(0) or black(1) using some clever modulo operations
 	"""
 	return (sqr%8+int(sqr/8))%2
+
+def perft(depth, init_efen=fen2efen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')):
+	"""
+	PERFormance Test, move path enumeration function. Used for move generation debugging.
+	"""
+	assert depth>0, "Depth must be bigger than 0"
+	nodes=0
+
+	board_perft = brd.board()
+	board_perft.set(init_efen)
+	moves=board_perft.avl_movs()
+	if depth==1:
+		return len(moves)
+
+	
+	for move in moves:
+		move_efen=board_perft.make_move(move)
+		nodes+=perft(depth-1,init_efen=move_efen)
+		board_perft.unmake_move()
+
+	return nodes
+
+
+
+
 
 # TO DO: PGN TO EFEN list converter

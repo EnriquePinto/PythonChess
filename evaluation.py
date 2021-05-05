@@ -40,6 +40,27 @@ def is_over(efen_hist, last_move_was_check):
 	#	3.king and knight versus king
 	#	4.king and bishop versus king and bishop with the bishops on the same color.
 
+	#piece_count=[pawn, rook, w sqr bishop, b sqr bishop, knight, queen, king]
+	test_brd = brd.board()
+	test_brd.set(efen_hist[-1])
+	# king vs king
+	if test_brd.w_piece_count==[0,0,0,0,0,0,1] and test_brd.b_piece_count==[0,0,0,0,0,0,1]:
+		return 2
+	# Knight and king vs king (both ways)
+	elif ((test_brd.w_piece_count==[0,0,0,0,1,0,1] and test_brd.b_piece_count==[0,0,0,0,0,0,1]) or 
+		 (test_brd.w_piece_count==[0,0,0,0,0,0,1] and test_brd.b_piece_count==[0,0,0,0,1,0,1])):
+		return 2
+	# King and bishop vs king
+	elif ((test_brd.w_piece_count==[0,0,1,0,0,0,1] and test_brd.b_piece_count==[0,0,0,0,0,0,1]) or 
+		 (test_brd.w_piece_count==[0,0,0,1,0,0,1] and test_brd.b_piece_count==[0,0,0,0,0,0,1]) or
+		 (test_brd.w_piece_count==[0,0,0,0,0,0,1] and test_brd.b_piece_count==[0,0,1,0,0,0,1]) or 
+		 (test_brd.w_piece_count==[0,0,0,0,0,0,1] and test_brd.b_piece_count==[0,0,0,1,0,0,1])):
+		return 2
+	# Symmetrical king and bishop
+	elif ((test_brd.w_piece_count==[0,0,1,0,0,0,1] and test_brd.b_piece_count==[0,0,1,0,0,0,1]) or
+		 (test_brd.w_piece_count==[0,0,0,1,0,0,1] and test_brd.b_piece_count==[0,0,0,1,0,0,1])):
+		return 2
+	
 
 	# DRAW BY REPETITION - Check for threefold repetition ----------
 	# First, creates a vector 'pos_vec' with relevant information for checking for threefold repetition in each position
@@ -57,9 +78,9 @@ def is_over(efen_hist, last_move_was_check):
 			return 2
 
 	# DRAW BY STALEMATE - Check last position for available moves
-	mate_brd = brd.board()
-	mate_brd.set(efen_hist[-1])
-	n_of_avl_movs=mate_brd.avl_movs(check_legality=True, extra_output=True)[2] # Output: (legal_moves, ilegal_moves, how many legal moves)
+	# mate_brd = brd.board()
+	# mate_brd.set(efen_hist[-1])
+	n_of_avl_movs=test_brd.avl_movs(check_legality=True, extra_output=True)[2] # Output: (legal_moves, ilegal_moves, how many legal moves)
 	if n_of_avl_movs==0:
 		if last_move_was_check:
 			return 1
@@ -115,8 +136,6 @@ def std_eval(efen, move_count):
 	"""
 	# Reads efen
 	exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
-
-
 
 	# Material count
 	white_material=[0,0,0,0,0] #pawn, knight, bishop, rook, queen

@@ -20,33 +20,58 @@ class board:
 		# Piece list
 		self.white_pieces=[]
 		self.black_pieces=[]
+		# While adding pieces keep count of how many of each type
+		self.w_piece_count=[0,0,0,0,0,0,0] #[pawn, rook, w sqr bishop, b sqr bishop, knight, queen, king]
+		self.b_piece_count=[0,0,0,0,0,0,0]
 		for i in range(64):
 			# White
 			if self.exp_pos[i]=='P':
 				self.white_pieces.append(pcs.pawn(0,i))
+				self.w_piece_count[0]+=1
 			elif self.exp_pos[i]=='R':
 				self.white_pieces.append(pcs.rook(0,i))
+				self.w_piece_count[1]+=1
 			elif self.exp_pos[i]=='B':
 				self.white_pieces.append(pcs.bishop(0,i))
+				# If white square bishop
+				if util.white_or_black(i)==0:
+					self.w_piece_count[2]+=1
+				# Else, dark square bishop
+				else:
+					self.w_piece_count[3]+=1
 			elif self.exp_pos[i]=='N':
 				self.white_pieces.append(pcs.knight(0,i))
+				self.w_piece_count[4]+=1
 			elif self.exp_pos[i]=='Q':
 				self.white_pieces.append(pcs.queen(0,i))
+				self.w_piece_count[5]+=1
 			elif self.exp_pos[i]=='K':
 				self.white_pieces.append(pcs.king(0,i))
+				self.w_piece_count[6]+=1
 			# Black
 			elif self.exp_pos[i]=='p':
 				self.black_pieces.append(pcs.pawn(1,i))
+				self.b_piece_count[0]+=1
 			elif self.exp_pos[i]=='r':
 				self.black_pieces.append(pcs.rook(1,i))
+				self.b_piece_count[1]+=1
 			elif self.exp_pos[i]=='b':
 				self.black_pieces.append(pcs.bishop(1,i))
+				# If white square bishop
+				if util.white_or_black(i)==0:
+					self.b_piece_count[2]+=1
+				# Else, dark square bishop
+				else:
+					self.b_piece_count[3]+=1
 			elif self.exp_pos[i]=='n':
 				self.black_pieces.append(pcs.knight(1,i))
+				self.b_piece_count[4]+=1
 			elif self.exp_pos[i]=='q':
 				self.black_pieces.append(pcs.queen(1,i))
+				self.b_piece_count[5]+=1
 			elif self.exp_pos[i]=='k':
 				self.black_pieces.append(pcs.king(1,i))
+				self.b_piece_count[6]+=1
 
 	def avl_movs(self,check_legality=True, extra_output=False, output_ctrl_sqrs=False):
 		# Returns moves in the format (piece_object,move, is_check?)
@@ -86,6 +111,8 @@ class board:
 			test_brd = board()
 			# Goes through each move and checks if any of them allow a position without a king
 			for move in move_list:
+				# 	ADD EXCEPTION TO CASTLING MOVES (SEE IF CASTLING THROUGH CHECK)
+
 				# Get position after move
 				test_brd.set(self.efen)
 				new_efen=test_brd.make_move(move)
@@ -169,7 +196,6 @@ class board:
 			output_movs.append((avl_movs[i],checks[i]))
 		return output_movs
 
-
 	def print_avl_moves(self, n_col=5):
 		available_moves=self.avl_movs()
 		checks=self.scan_for_checks(available_moves)
@@ -190,11 +216,19 @@ class board:
 
 	def make_move(self, move):
 		"""
-		Make the move and update object attributes
+		Make the move and update object attributes. Save previous board state to be used in the 'unmake_move' fuction.
 		"""
+		self.old_efen=self.efen
 		new_efen=move[0].move_piece(move[1],self.efen)
 		self.set(new_efen)
 		return new_efen
+
+	def unmake_move(self):
+		"""
+		Unmake previous move and update object attributes.
+		"""
+		self.set(self.old_efen)
+		return self.old_efen
 
 	def board_control(self):
 		# Current player

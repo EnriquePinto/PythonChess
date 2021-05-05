@@ -10,9 +10,7 @@
 #		 8.Iterative Deepening Depth First
 #		 9.Zobrist hashing for positions, transposition tables, etc.
 
-
 # Imports
-
 import util, pcs, brd, evaluation
 
 # Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
@@ -24,34 +22,43 @@ import util, pcs, brd, evaluation
 #			  8/9 = castle short/long
 # What piece is moving and from whence it is moving is not included in the piece class move output since it can be identified by the '.sqr' and '.name' attributes
 
-
 # Identifying checks, captures, attacks:
 #	Checks: All checks have the "is check?" field equals "True"
 # 	Captures: All capture moves have the first digit of move type equals 1
-#	Attacks: TO DO!
 
-#start_fen='rnbqk1nr/pppp1ppp/4p3/8/1b1P4/2N5/PPP1PPPP/R1BQKBNR w KQkq - 0 1'
-
+start_efen=util.fen2efen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
 normal_efen=util.fen2efen('3k4/8/4P3/2Q5/8/6B1/3N4/1K1R2R1 w - - 0 1')
 mate_efen=util.fen2efen('k7/8/8/8/8/8/R7/1R5K b - - 0 1')
 stalemate_efen=util.fen2efen('k7/8/1Q6/8/8/8/8/7K b - - 0 1')
 mov50_efen=util.fen2efen('3k4/8/4P3/2Q5/8/6B1/3N4/1K1R2R1 w - - 50 100')
+dead_efen=util.fen2efen('3k4/8/8/8/4n3/8/8/3K4 w - - 0 1')
+kiwipete_efen=util.fen2efen('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
+
+# BUG: Perft returns 2043 to kiwipete position at depth 2, should be 2039. FIND OUT WHY!
+# Very probably castling through a check!
 
 
-util.print_fen(util.efen2fen(normal_efen))
 
-board1 = brd.board()
-board1.set(normal_efen)
+util.print_fen(util.efen2fen(kiwipete_efen))
 
-# 1st move
-mov_list1=board1.avl_movs(check_legality=True)
-board1.print_avl_moves()
+#print(util.perft(2, init_efen=start_efen))
+
+print(util.perft(2, init_efen=kiwipete_efen))
+
+
+
+# board1 = brd.board()
+# board1.set(normal_efen)
+
+# # 1st move
+# mov_list1=board1.avl_movs(check_legality=True)
+# board1.print_avl_moves()
 #new_move1=board1.make_move(mov_list1[0])
 # util.print_fen(util.efen2fen(new_move1))
 
 
-print(evaluation.is_over([mov50_efen],True))
-#print(evaluation.mate_stalemate_or_normal(stalemate_efen))
+# print(evaluation.is_over([dead_efen],True))
+#print(evaluation.mate_stalemate_or_normal(mov50_efen))
 
 print('- - - - - -')
 
