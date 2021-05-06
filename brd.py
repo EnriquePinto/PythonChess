@@ -110,16 +110,58 @@ class board:
 			# Creates new board to check for ilegal moves
 			test_brd = board()
 			# Goes through each move and checks if any of them allow a position without a king
-			for move in move_list:
-				# 	ADD EXCEPTION TO CASTLING MOVES (SEE IF CASTLING THROUGH CHECK)
+			for move in move_list:		
+				# Set ilegal flag as false, if move is deemed ilegal then set flag
+				ilegal_flag=False
+				# If move is castling, verify castling rules
+				# If move is short/long castle...
+				if move[1][1] in [8,9]:
+					test_brd.set(self.efen)
+					w_ctrl,b_ctrl=test_brd.board_control()
+					#If white piece...
+					if move[0].color==0:
+						# See if in check
+						if b_ctrl[60]!=0:
+							ilegal_list.append(move)
+							ilegal_flag=True
+						# Check short castling squares
+						elif move[1][1]==8:
+							# If short castling squares are controlled by black, short castling is ilegal!
+							if b_ctrl[61]!=0 or b_ctrl[62]!=0:
+								ilegal_list.append(move)
+								ilegal_flag=True
+
+						# Check long castling squares
+						elif move[1][1]==9:
+							# If short castling squares are controlled by black, short castling is ilegal!
+							if b_ctrl[58]!=0 or b_ctrl[59]!=0:
+								ilegal_list.append(move)
+								ilegal_flag=True
+					# If black piece...
+					else:
+						# See if in check
+						if w_ctrl[4]!=0:
+							ilegal_list.append(move)
+							ilegal_flag=True
+						# Check short castling squares
+						elif move[1][1]==8:
+							# If short castling squares are controlled by black, short castling is ilegal!
+							if w_ctrl[5]!=0 or w_ctrl[6]!=0:
+								ilegal_list.append(move)
+								ilegal_flag=True
+
+						# Check long castling squares
+						elif move[1][1]==9:
+							# If short castling squares are controlled by black, short castling is ilegal!
+							if w_ctrl[2]!=0 or w_ctrl[3]!=0:
+								ilegal_list.append(move)
+								ilegal_flag=True
 
 				# Get position after move
 				test_brd.set(self.efen)
 				new_efen=test_brd.make_move(move)
 				oponent_answers=test_brd.avl_movs(check_legality=False)
 				# Goes through each oponent answer and checks for a position without either king
-				# Set ilegal flag as false, if move is deemed ilegal then set flag
-				ilegal_flag=False
 				for answer in oponent_answers:
 					ans_pos,_,_,_,_,_ = util.read_fen(test_brd.preview_move(answer))
 					# If any king is missing remove the move from list
@@ -230,10 +272,10 @@ class board:
 		self.set(self.old_efen)
 		return self.old_efen
 
-	def board_control(self):
+	def board_control(self, pseudo=False):
 		# Current player
 		control_vec1=np.zeros(64)
-		_,controlled_sqrs1 = self.avl_movs(output_ctrl_sqrs=True)
+		_,controlled_sqrs1 = self.avl_movs(check_legality=False, output_ctrl_sqrs=True)
 		for sqr in controlled_sqrs1:
 			control_vec1[sqr]+=1
 		# Save the current EFEN and switch who's to move
@@ -247,7 +289,7 @@ class board:
 		self.set(new_efen)
 		# Next player
 		control_vec2=np.zeros(64)
-		_,controlled_sqrs2 = self.avl_movs(output_ctrl_sqrs=True)
+		_,controlled_sqrs2 = self.avl_movs(check_legality=False, output_ctrl_sqrs=True)
 		for sqr in controlled_sqrs2:
 			control_vec2[sqr]+=1
 

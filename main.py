@@ -33,19 +33,11 @@ stalemate_efen=util.fen2efen('k7/8/1Q6/8/8/8/8/7K b - - 0 1')
 mov50_efen=util.fen2efen('3k4/8/4P3/2Q5/8/6B1/3N4/1K1R2R1 w - - 50 100')
 dead_efen=util.fen2efen('3k4/8/8/8/4n3/8/8/3K4 w - - 0 1')
 kiwipete_efen=util.fen2efen('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1')
+test_efen=util.fen2efen('rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8')
 
-# BUG: Perft returns 2043 to kiwipete position at depth 2, should be 2039. FIND OUT WHY!
-# Very probably castling through a check!
+# Still need to remove castling when in check!
 
-
-
-util.print_fen(util.efen2fen(kiwipete_efen))
-
-#print(util.perft(2, init_efen=start_efen))
-
-print(util.perft(2, init_efen=kiwipete_efen))
-
-
+# util.print_fen(util.efen2fen(kiwipete_efen))
 
 # board1 = brd.board()
 # board1.set(normal_efen)

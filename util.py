@@ -201,7 +201,6 @@ def perft(depth, init_efen=fen2efen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 	if depth==1:
 		return len(moves)
 
-	
 	for move in moves:
 		move_efen=board_perft.make_move(move)
 		nodes+=perft(depth-1,init_efen=move_efen)
