@@ -3,8 +3,8 @@
 My private python chess engine project.
 
 To do:  
-1. Board and piece objects
-2. Move generation (piece movements, legal moves, castling, check, checkmate, stalemate, repetition, 50 move rule, dead positions)
+1. Board and piece objects (Done!)
+2. Move generation (piece movements, legal moves, castling, check, checkmate, stalemate, repetition, 50 move rule, dead positions) (Done! Missing castling through check!)
 3. Position Evaluation
 4. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
 5. Move order improvement
