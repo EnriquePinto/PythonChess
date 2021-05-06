@@ -338,11 +338,5 @@ class board:
 		"""
 		# To do!
 		pass
-# A board object is to be used in every piece object instance to identify legal moves and checks!
-# 	-The actual board object where moves will be made is to be called 'main_board'
-# 	-The local instance of a board object in a piece object is to be called 'local_board'
 
-# Each piece move output is a tuple: (target square, type of move, is check?)
-# Move types: 0 = normal; 1 = capture; 2 = double pawn move; 3 = en passant; 
-#			  4/5/6/7 = promotion to queen/rook/knight/bishop; 14/15/16/17 = capture and promotion to queen/rook/knight/bishop
-#			  8/9 = castle short/long
+

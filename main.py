@@ -37,16 +37,20 @@ test_efen=util.fen2efen('rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1
 
 # Still need to remove castling when in check!
 
-# util.print_fen(util.efen2fen(kiwipete_efen))
+util.print_fen(util.efen2fen(kiwipete_efen))
+board1 = brd.board()
+board1.set(normal_efen)
 
-# board1 = brd.board()
-# board1.set(normal_efen)
 
-# # 1st move
-# mov_list1=board1.avl_movs(check_legality=True)
-# board1.print_avl_moves()
-#new_move1=board1.make_move(mov_list1[0])
-# util.print_fen(util.efen2fen(new_move1))
+# 1st move
+mov_list1=board1.gen_moves()
+board1.print_avl_moves()
+new_move1=board1.make_move(mov_list1[0])
+
+util.print_fen(util.efen2fen(new_move1))
+
+
+# evaluation.std_eval()
 
 
 # print(evaluation.is_over([dead_efen],True))

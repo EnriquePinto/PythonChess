@@ -127,54 +127,104 @@ def mate_stalemate_or_normal(efen):
 	else:
 		return 0
 
+# Pieces should be worth more towards the endgame, where they make a more significant difference
+def std_eval(efen_hist, last_move):
+	"""
+	Takes an efen code history, and the last move and returns an evaluation for that position based on the features and the weights
+	"""
+
+	# Check if draw, win, or normal
+	# Last move check?
+	last_move_was_check=last_move[1]
+	over=is_over(efen_hist, last_move_was_check)
+	# If draw, return 0
+	if over==2:
+		return 0
+	# If mate or win, return large value
+	elif over==1:
+		return 1e6
 
 
-# Pieces swhould be worth more towards the endgame, where they make a more significant difference
-def std_eval(efen, move_count):
-	"""
-	Takes an efen code and returns an evaluation for that position based on the features and the weights
-	"""
+	# Actually evaluate current position
+	efen=efen_hist[-1]
+
 	# Reads efen
 	exp_pos, clr_to_move, castl_avl, en_pas_targ, half_mov_clk, mov_clk = util.read_fen(efen)
 
-	# Material count
-	white_material=[0,0,0,0,0] #pawn, knight, bishop, rook, queen
-	black_material=[0,0,0,0,0]
-	for piece in exp_pos:
+	# Material count -------
+	material_weight=np.array([1, 2.5, 3, 3, 5, 9])
+	white_material=np.array([0,0,0,0,0,0]) #pawn, knight, w bishop, b bishop, rook, queen
+	black_material=np.array([0,0,0,0,0,0])
+	for i in range(len(exp_pos)):
 		# White pieces
-		if piece=='P':
+		if exp_pos[i]=='P':
 			white_material[0]+=1
-		elif piece=='N':
+		elif exp_pos[i]=='N':
 			white_material[1]+=1
-		elif piece=='B':
-			white_material[2]+=1
-		elif piece=='R':
-			white_material[3]+=1
-		elif piece=='Q':
+		elif exp_pos[i]=='B':
+			if util.white_or_black(i)==0:
+				white_material[2]+=1
+			else:
+				white_material[3]+=1
+		elif exp_pos[i]=='R':
 			white_material[4]+=1
+		elif exp_pos[i]=='Q':
+			white_material[5]+=1
 		# Black pieces
-		elif piece=='p':
+		elif exp_pos[i]=='p':
 			black_material[0]+=1
-		elif piece=='n':
+		elif exp_pos[i]=='n':
 			black_material[1]+=1
-		elif piece=='b':
-			black_material[2]+=1
-		elif piece=='r':
-			black_material[3]+=1
-		elif piece=='q':
+		elif exp_pos[i]=='b':
+			if util.white_or_black(i)==0:
+				black_material[2]+=1
+			else:
+				black_material[3]+=1
+		elif exp_pos[i]=='r':
 			black_material[4]+=1
+		elif exp_pos[i]=='q':
+			black_material[5]+=1
+	material_score=material_weight@(white_material-black_material)
 
-	# Mobility (move count function input)
 
-	# Controlled squares (Space)
+	# Mobility (move count function input) -------
+	eval_brd=brd.board()
+	eval_brd.set(efen)
+	move_count1=len(eval_brd.avl_movs())
+	# Change current player to move to get mobility
+	prev_clr_to_move=clr_to_move
+	if clr_to_move=='w':
+		clr_to_move='b'
+	else:
+		clr_to_move='w'
+	eval_brd.set(exp_pos+' '+clr_to_move+' '+castl_avl+' '+en_pas_targ+' '+half_mov_clk+' '+mov_clk)
+	move_count2=len(eval_brd.avl_movs())
+	# If white was to move originally:
+	if clr_to_move=='b':
+		mob_score=move_count1-move_count2
+		clr_to_move=prev_clr_to_move
+	# If black was to move:
+	else:
+		mob_score=move_count2-move_count1
+		clr_to_move=prev_clr_to_move
 
+	# Controlled squares (Space) -------
+	w_ctrl,b_ctrl=eval_brd.board_control()
+	control_score=sum(w_ctrl-b_ctrl)
 
 	# Development (don't move same piece twice in the opening?)
 
 	# Positional adders (doubled pawns, blocked pawns, isolated pawns, knights on edge)
 
-	# Tempo bonus?
+	# Tempo bonus
+	if clr_to_move=='w':
+		tempo_bonus=0.2
+	else:
+		tempo_bonus=-0.2
 
+	# General scoring weight: [material, mobility, control, tempo]
+	score_weight=np.array([1, 0.1, 0.1, 1])
+	score = score_weight@np.array([material_score, mob_score, control_score, tempo_bonus])
 
 	pass
 	
