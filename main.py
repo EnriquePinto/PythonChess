@@ -60,8 +60,13 @@ new_move2=board1.make_move(mov_list2[13][0])
 util.print_fen(util.efen2fen(new_move2))
 
 print(board1.efen_hist)
-
 print('Eval =',evaluation.std_eval(board1.efen_hist,new_move1))
+
+
+board1.unmake_move()
+print(board1.efen_hist)
+util.print_fen(util.efen2fen(board1.efen))
+
 
 # # 3rd move
 # mov_list3=board1.avl_movs()

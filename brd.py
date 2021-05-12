@@ -282,7 +282,8 @@ class board:
 		"""
 		Unmake previous move and update object attributes.
 		"""
-		self.set(self.old_efen)
+		self.set(self.old_efen,reset_hist=False)
+		self.efen_hist=self.efen_hist[0:-2]
 		return self.old_efen
 
 	def board_control(self, pseudo=False):
