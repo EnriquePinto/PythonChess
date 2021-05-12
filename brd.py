@@ -2,19 +2,28 @@
 
 import util
 import pcs
+import evaluation
 import numpy as np
 
 start_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 class board:
 
-	def set(self, efen, fen_in=False):
+	def set(self, efen, fen_in=False, reset_hist=True):
 		if fen_in:
 			self.fen=fen
 			# Expand FEN and instantiate a piece in each position
 			self.efen=util.fen2efen(fen)
 		else:
 			self.efen=efen
+		# If reset...
+		if reset_hist==True:
+			# Starts new efen history list
+			self.efen_hist=[self.efen]
+		else:
+			# Append new EFEN
+			self.efen_hist.append(efen)
+		
 		# Interprets the EFEN code
 		self.exp_pos, self.clr_to_move, self.castl_avl, self.en_pas_targ, self.half_mov_clk, self.mov_clk = util.read_fen(self.efen)
 		# Piece list
@@ -159,7 +168,7 @@ class board:
 
 				# Get position after move
 				test_brd.set(self.efen)
-				new_efen=test_brd.make_move(move)
+				test_brd.set(test_brd.preview_move(move))
 				oponent_answers=test_brd.avl_movs(check_legality=False)
 				# Goes through each oponent answer and checks for a position without either king
 				for answer in oponent_answers:
@@ -230,12 +239,15 @@ class board:
 	def gen_moves(self):
 		"""
 		Uses the "avl_movs" and the "scan_for_checks" methods to generate 'check aware' move generation.
+		"gen_moves" is different from the "avl_movs" function in the sense that, while "avl_movs" returns a list of (piece object, piece lvl move) tuples, "gen_moves" returns
+		a (board lvl last move, last move check?) tuple. The EFEN history is kept as an object attribute, appended in the "set" function during the "make_move" method.
 		"""
 		avl_movs=self.avl_movs()
 		checks=self.scan_for_checks(avl_movs)
 		output_movs=[]
 		for i in range(len(avl_movs)):
-			output_movs.append((avl_movs[i],checks[i]))
+			output_movs.append((avl_movs[i], # Last move
+								checks[i])) # Was last move check?
 		return output_movs
 
 	def print_avl_moves(self, n_col=5):
@@ -252,6 +264,7 @@ class board:
 
 	def preview_move(self, move):
 		"""
+		Receives (piece, piece lvl move) tuple and outputs a resulting EFEN
 		Just return the move output without changing object attributes
 		"""
 		return move[0].move_piece(move[1],self.efen)
@@ -262,7 +275,7 @@ class board:
 		"""
 		self.old_efen=self.efen
 		new_efen=move[0].move_piece(move[1],self.efen)
-		self.set(new_efen)
+		self.set(new_efen,reset_hist=False)
 		return new_efen
 
 	def unmake_move(self):

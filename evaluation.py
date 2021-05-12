@@ -186,7 +186,6 @@ def std_eval(efen_hist, last_move):
 			black_material[5]+=1
 	material_score=material_weight@(white_material-black_material)
 
-
 	# Mobility (move count function input) -------
 	eval_brd=brd.board()
 	eval_brd.set(efen)
@@ -226,5 +225,5 @@ def std_eval(efen_hist, last_move):
 	score_weight=np.array([1, 0.1, 0.1, 1])
 	score = score_weight@np.array([material_score, mob_score, control_score, tempo_bonus])
 
-	pass
+	return score
 	

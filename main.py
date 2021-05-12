@@ -36,34 +36,32 @@ kiwipete_efen=util.fen2efen('r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R
 test_efen=util.fen2efen('rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8')
 
 # Still need to remove castling when in check!
+efen=start_efen
 
-util.print_fen(util.efen2fen(kiwipete_efen))
+
+util.print_fen(util.efen2fen(efen))
 board1 = brd.board()
-board1.set(normal_efen)
+board1.set(efen)
 
 
 # 1st move
 mov_list1=board1.gen_moves()
 board1.print_avl_moves()
-new_move1=board1.make_move(mov_list1[0])
-
+new_move1=board1.make_move(mov_list1[5][0])
 util.print_fen(util.efen2fen(new_move1))
-
-
-# evaluation.std_eval()
-
-
-# print(evaluation.is_over([dead_efen],True))
-#print(evaluation.mate_stalemate_or_normal(mov50_efen))
+print('Eval =',evaluation.std_eval(board1.efen_hist,new_move1))
 
 print('- - - - - -')
 
-# # 2nd move
-# mov_list2=board1.avl_movs()
-# board1.print_avl_moves()
-# board1.print_control()
-# new_move2=board1.make_move(mov_list2[13])
-# util.print_fen(util.efen2fen(new_move2))
+# 2nd move
+mov_list2=board1.gen_moves()
+board1.print_avl_moves()
+new_move2=board1.make_move(mov_list2[13][0])
+util.print_fen(util.efen2fen(new_move2))
+
+print(board1.efen_hist)
+
+print('Eval =',evaluation.std_eval(board1.efen_hist,new_move1))
 
 # # 3rd move
 # mov_list3=board1.avl_movs()
