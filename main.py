@@ -11,7 +11,8 @@
 #		 9.Zobrist hashing for positions, transposition tables, etc.
 
 # Imports
-import util, pcs, brd, evaluation
+import util, pcs, brd, evaluation, optimization
+import numpy as np
 
 # Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 # Pieces colors are represented by a bynary digit: 0=white, 1=black
@@ -47,33 +48,33 @@ board1.set(efen)
 # 1st move
 mov_list1=board1.gen_moves()
 board1.print_avl_moves()
-new_move1=board1.make_move(mov_list1[5][0])
-util.print_fen(util.efen2fen(new_move1))
-print('Eval =',evaluation.std_eval(board1.efen_hist,new_move1))
+move1=mov_list1[5]
+move1_efen=board1.make_move(move1[0])
+util.print_fen(util.efen2fen(move1_efen))
+print('Eval =',evaluation.std_eval(board1.efen_hist,move1_efen))
 
 print('- - - - - -')
 
-# 2nd move
-mov_list2=board1.gen_moves()
-board1.print_avl_moves()
-new_move2=board1.make_move(mov_list2[13][0])
-util.print_fen(util.efen2fen(new_move2))
-
-print(board1.efen_hist)
-print('Eval =',evaluation.std_eval(board1.efen_hist,new_move1))
+board_state=(board1.efen_hist,move1)
+print(optimization.alpha_beta(board_state, 3, -np.inf, np.inf, True))
 
 
-board1.unmake_move()
-print(board1.efen_hist)
-util.print_fen(util.efen2fen(board1.efen))
+# # 2nd move
+# mov_list2=board1.gen_moves()
+# board1.print_avl_moves()
+# new_move2=board1.make_move(mov_list2[13][0])
+# util.print_fen(util.efen2fen(new_move2))
+# print('Eval =',evaluation.std_eval(board1.efen_hist,new_move2))
 
+# print('- - - - - -')
 
 # # 3rd move
-# mov_list3=board1.avl_movs()
+# mov_list3=board1.gen_moves()
 # board1.print_avl_moves()
-# new_move3=board1.make_move(mov_list3[1])
+# new_move3=board1.make_move(mov_list3[6][0])
+# print(mov_list3[6])
 # util.print_fen(util.efen2fen(new_move3))
-
+# print('Eval =',evaluation.std_eval(board1.efen_hist,new_move3))
 
 
 

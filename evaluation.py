@@ -127,10 +127,11 @@ def mate_stalemate_or_normal(efen):
 	else:
 		return 0
 
-# Pieces should be worth more towards the endgame, where they make a more significant difference
+# Future reminder: Pieces should be worth more towards the endgame, where they make a more significant difference
 def std_eval(efen_hist, last_move):
 	"""
-	Takes an efen code history, and the last move and returns an evaluation for that position based on the features and the weights
+	Takes an efen code history, and the last move and returns an evaluation for that position based on the features and the weights.
+	"last_move" is a tuple (board lvl move, was check?)
 	"""
 
 	# Check if draw, win, or normal
