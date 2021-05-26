@@ -4,7 +4,7 @@ My private python chess engine project.
 
 To do:  
 1. Board and piece objects (Done!)
-2. Move generation (piece movements, legal moves, castling, check, checkmate, stalemate, repetition, 50 move rule, dead positions) (Done! Missing castling through check!)
+2. Move generation (promotion moves missing in make_move!)
 3. Position Evaluation
 4. Alpha-Beta pruning (Best First, Depth First, Breadth first, etc.)
 5. Move order improvement
@@ -12,45 +12,29 @@ To do:
 7. Iterative Deepening Depth First
 8. Monte Carlo Random Tree Search (computationally viable at least for some evaluations?)
 9. Transposition tables
-10. Improve move generation (magic bitboards, etc.)
 
 ---
 
 Pieces positions are a number between 0 and 63 counting from square a8, left to right, downwards, finishing on square h1
 Pieces colors are represented by a bynary digit: 0=white, 1=black
 
-Moves are understood on 2 "scopes": piece level and board level. 
+Pieces by number:
+* WHITE: 00 unmoved pawn, 01 moved pawn, 02 knight, 03 bishop, 04 rook, 05 queen, 06 KQking, 07 Kking, 08 Qking, 09 king
+* BLACK: 10 unmoved pawn, 11 moved pawn, 12 knight, 13 bishop, 14 rook, 15 queen, 16 KQking, 17 Kking, 18 Qking, 19 king
+* '': Empty
 
-* Piece level moves are a tuple of the form (target square, type of move); 
-* Board level moves are also tuples, but of the form (piece object instance, piece level move). 
- 
-A board level move may even be further nested in a tuple which states if the move is a check or not in the following form: (board level move, is check?).
+Moves are a tuple (origin square, target square). Special moves are codified with a target square larger than 63.
+Move legend: 
+* 0-63: target square
+* 64: kingside castle
+* 65: queenside castle
+* a + target_square; a=100/200/300/400: promotion to knight/bishop/rook/queen/rook
 
-## Move types: 
 
-0 = normal;
-
-1 = capture; 
-
-2 = double pawn move; 
-
-3 = en passant; 
-
-8/9 = castle short/long
-
-4/5/6/7 = promotion to queen/rook/knight/bishop;
-
-14/15/16/17 = capture and promotion to queen/rook/knight/bishop
-			     
-What piece is moving and from whence it is moving is not included in the piece class move output since it can be identified by the '.sqr' and '.clr' attributes
-
-## Move priority and type identification
-
-Identifying checks, captures, attacks:
-* Checks: All checks have the "is check?" field equals "True"
-* Captures: All capture moves have the first digit of move type equals 1
-
----
-
-Remarks:
-* Generating moves through precalculated stored bitboards and using magic bitboards and masking is considered to be the vastly superior option for move generation speed benchmarks. These generated moves need to be verified for legality (or not, see above bulletpoint) and its properties (check, capture, attack, pin, etc.) considered for move ordering reasons. Future updates may include calculation of magic bitboards and an overhaul of move generation.
+State is a list of "frames" encoded as:
+1. List of size 64 of all squares and their occupancy (castling is encoded in the king piece ) TO DO: USE SOME HASHING: ZOBRIST, BCH, ...
+2. Color to move
+3. En passant square
+4. Half-move count (to facilitate 50 move rule detection)
+Move count is unnecessary since it can be achieved from the list size count.
+Also store vector sup_data of (w_pieces, b_pieces, w_bb, b_bb) history
