@@ -9,7 +9,7 @@ import time
 
 # Pieces by number: WHITE: 00unmoved pawn, 01moved pawn, 02knight, 03bishop, 04rook, 05queen, 06KQking, 07Kking, 08Qking, 09king
 #					BLACK: 10unmoved pawn, 11moved pawn, 12knight, 13bishop, 14rook, 15queen, 16KQking, 17Kking, 18Qking, 19king
-#					Empty: None
+#					'': None
 
 # Use en passant square by square number number. If no en passant: None
 
@@ -1065,17 +1065,20 @@ class board:
 		"""
 		assert depth>0, "Depth must be bigger than 0"
 		nodes=0
-		moves=self.get_pseudo_moves()
 		if depth==1:
-			return len(moves)
+			# Only get legal moves for depth==1
+			moves=self.get_moves()
+			return (len(moves), True)
 
+		# Otherwise just generate pseudolegal moves
+		moves=self.get_pseudo_moves()
 		for move in moves:
 			# If castling, only do it if known to be legal
 			if move[1] in [64,65]:
 				if self.is_castling_legal(move):
 					
 					self.make_move(move)
-					count=self.perft(depth-1,first_call=False)
+					count=self.lazy_perft(depth-1,first_call=False)
 					nodes+=count
 					if first_call==True:
 						print(move, count, 'at',time.time() - start_time)
@@ -1098,19 +1101,20 @@ class board:
 				if (not has_w_king) or (not has_b_king):
 					ilegal=True
 					return (0,False)
-				# If 
-				count, legal=self.perft(depth-1,first_call=False)
+				# If legal, proceed with perft
+				#print('return',self.lazy_perft(depth-1,first_call=False))
+				count, legal=self.lazy_perft(depth-1,first_call=False)
 				if legal:
 					nodes+=count
-				# If perft returned ilegal, stop count and don't add to nodes
+				# If perft returned ilegal, stop count and return 0 nodes for this move (it is ilegal, after all!)
 				else:
-					return 0, True
+					return (0, True)
 
 				if first_call==True:
 					print(move, count, 'at',time.time() - start_time)
 				self.unmake_move()
 
-		return nodes, legal
+		return (nodes, legal)
 
 	def appraise_moves(self,move_list):
 		pass
@@ -1130,7 +1134,8 @@ def main_func():
 
 	start_time = time.time()
 
-	node_count=test_board.perft(4)
+	node_count,_=test_board.lazy_perft(5)
+	#node_count=test_board.perft(4)
 	print(node_count,'total nodes')
 
 	# test_board.make_move(moves[3])
