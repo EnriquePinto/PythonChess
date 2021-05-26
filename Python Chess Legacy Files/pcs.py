@@ -1751,6 +1751,7 @@ class king:
 				# Check if normal move (target square is empty)
 				elif exp_pos[target_sqr]=='u':
 					avl_mov_list.append((target_sqr,0,))
+					controlled_squares.append(target_sqr)
 				# Stop if blocked by friendly piece
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 					controlled_squares.append(target_sqr)
@@ -1758,6 +1759,7 @@ class king:
 				# Generate capture if finds enemy piece and stop
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 					avl_mov_list.append((target_sqr,1,))
+					controlled_squares.append(target_sqr)
 
 			# Castling short
 			if 'K' in castl_avl and exp_pos[61]=='u' and exp_pos[62]=='u':
@@ -1785,6 +1787,7 @@ class king:
 				# Check if normal move (target square is empty)
 				elif exp_pos[target_sqr]=='u':
 					avl_mov_list.append((target_sqr,0,))
+					controlled_squares.append(target_sqr)
 				# Stop if blocked by friendly piece
 				elif exp_pos[target_sqr] in ['p','n','b','r','q','k']:
 					controlled_squares.append(target_sqr)
@@ -1792,6 +1795,7 @@ class king:
 				# Generate capture if finds enemy piece and stop
 				elif exp_pos[target_sqr] in ['P','N','B','R','Q','K']:
 					avl_mov_list.append((target_sqr,1,))
+					controlled_squares.append(target_sqr)
 
 			# Castling short
 			if 'k' in castl_avl and exp_pos[5]=='u' and exp_pos[6]=='u':
