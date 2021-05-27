@@ -306,33 +306,64 @@ class board:
 		# Moved pawn, DO PROMOTION EXCEPTIONS!!! target_sqr>63 and piece count
 		elif piece%10==1:
 			# Removing captured piece
-			if target_sqr!='':
-				try:
+			if target_sqr!='' and target_sqr<64:
+				# try:
+				# 	deep_remove(w_pieces,target_sqr,move[1])
+				# 	w_bb-=2**(63-move[1])
+				# except:
+				# 	deep_remove(b_pieces,target_sqr,move[1])
+				# 	b_bb-=2**(63-move[1])
+				if piece>=10:
 					deep_remove(w_pieces,target_sqr,move[1])
 					w_bb-=2**(63-move[1])
-				except:
+				else:
 					deep_remove(b_pieces,target_sqr,move[1])
 					b_bb-=2**(63-move[1])
 			# Do promotions!!! Change piece count...
-			# Change piece position
-			try:
-				deep_remove(w_pieces,piece,move[0])
-				deep_append(w_pieces,piece,move[1])
-				w_bb-=2**(63-move[0])
-				w_bb+=2**(63-move[1])
-			except:
-				deep_remove(b_pieces,piece,move[0])
-				deep_append(b_pieces,piece,move[1])
-				b_bb-=2**(63-move[0])
-				b_bb+=2**(63-move[1])
-			# Move piece
-			new_squares[move[1]]=piece
-			new_squares[move[0]]=''
+			if move[1]<64:
+				# Change piece position
+				try:
+					deep_remove(w_pieces,piece,move[0])
+					deep_append(w_pieces,piece,move[1])
+					w_bb-=2**(63-move[0])
+					w_bb+=2**(63-move[1])
+				except:
+					deep_remove(b_pieces,piece,move[0])
+					deep_append(b_pieces,piece,move[1])
+					b_bb-=2**(63-move[0])
+					b_bb+=2**(63-move[1])
+				# Move piece
+				new_squares[move[1]]=piece
+				new_squares[move[0]]=''
 
-			# No en passant square
-			new_en_passant=None
-			# Pawn moves reset half move clock
-			new_half_move=0
+				# No en passant square
+				new_en_passant=None
+				# Pawn moves reset half move clock
+				new_half_move=0
+			# If promotion
+			# Legend: a + target_square; a=100/200/300/400: simple move promotion to knight/bishop/rook/queen
+			else:
+				promo_piece=piece+int(move[1]/100) # piece-1=10 if black, =0 if white / int(move[1]/100)+1=promoted piece type
+												   # therefore color+type=piece-1+int(move[1]/100)+1=piece+int(move[1]/100)
+				promo_sqr=move[1]%100
+				try:
+					deep_remove(w_pieces,1,move[0])
+					deep_append(w_pieces,promo_piece,promo_sqr)
+					w_bb-=2**(63-move[0])
+					w_bb+=2**(63-promo_sqr)
+				except:
+					deep_remove(b_pieces,11,move[0])
+					deep_append(b_pieces,promo_piece,move[1])
+					b_bb-=2**(63-move[0])
+					b_bb+=2**(63-move[1])
+				# Move piece
+				new_squares[promo_sqr]=promo_piece
+				new_squares[move[0]]=''
+
+				# No en passant square
+				new_en_passant=None
+				# Pawn moves reset half move clock
+				new_half_move=0
 
 		# Rook
 		elif piece%10==4:
@@ -724,18 +755,18 @@ class board:
 					legal_moves.append(move)
 			# Other kinds of moves
 			else:
-				#print('testing move:',move,'---------------------------------------------------------------------------')
+				# print('testing move:',move,'---------------------------------------------------------------------------')
 				self.make_move(move)
-				#[print('made item',i,self.sup_data[i]) for i in range(len(self.sup_data))]
-				#print('')
+				# [print('made item',i,self.sup_data[i]) for i in range(len(self.sup_data))]
+				# print('')
 				# Get answers
 				answers=self.get_pseudo_moves()
 				# See if any answer returns a position without a king, raise ilegal flag if it does
 				ilegal=False
 				for answer in answers:
-					#print('answer',answer)
+					# print('answer',answer)
 					self.make_move(answer)
-					#[print('supitem',i,self.sup_data[i]) for i in range(len(self.sup_data))]
+					# [print('supitem',i,self.sup_data[i]) for i in range(len(self.sup_data))]
 					# Look for no kings
 					has_w_king=False
 					for i in [6,7,8,9]:
@@ -747,9 +778,9 @@ class board:
 							has_b_king=True
 					# Unmake the move to prepare for next answer
 					self.unmake_move()
-					#print('')
-					#[print('unmade supitem',i,self.sup_data[i]) for i in range(len(self.sup_data))]
-					#print('')
+					# print('')
+					# [print('unmade supitem',i,self.sup_data[i]) for i in range(len(self.sup_data))]
+					# print('')
 					if (not has_w_king) or (not has_b_king):
 						ilegal=True
 						break
@@ -759,13 +790,50 @@ class board:
 				self.unmake_move()
 		return legal_moves
 
+	def is_in_check(self):
+		"""
+		Verifies if current side to move king is in check.
+		"""
+		# Changes side to move
+		# Assign new tuple since tuples are immutable
+		self.state[-1]=(self.state[-1][0],(self.state[-1][1]+1)%2,self.state[-1][2],self.state[-1][3]) 
+		# Gets pseudo moves
+		answers=self.get_pseudo_moves()
+		# See if any answer returns a position without a king, raise check flag if it does
+		check=False
+		for answer in answers:
+			self.make_move(answer)
+			# Check legality: Look for no kings
+			has_w_king=False
+			for i in [6,7,8,9]:
+				if self.sup_data[-1][0][i]!=[]:
+					has_w_king=True
+			has_b_king=False
+			for i in [16,17,18,19]:
+				if self.sup_data[-1][1][i]!=[]:
+					has_b_king=True
+			self.unmake_move()
+			# If king capture, reverse board state and return true
+			if (not has_w_king) or (not has_b_king):
+				# Revert color
+				self.state[-1]=(self.state[-1][0],(self.state[-1][1]+1)%2,self.state[-1][2],self.state[-1][3])
+				return True
+		# Revert color
+		self.state[-1]=(self.state[-1][0],(self.state[-1][1]+1)%2,self.state[-1][2],self.state[-1][3])
+		return False
+
+
 	def is_castling_legal(self,move):
 		# Kingside castling
-		if move[1]==64:
+		if self.is_in_check():
+			return False
+		elif move[1]==64:
 			# If white king
 			if self.state[-1][1]==0:
 				# Move king to squares 61 and 62 and leave king in 60 to see if in check
-				for castl_move in [(60,60),(60,61),(60,62)]:
+				# move (60,60) generates a bug since make_move sees it as the king capturing itself, causing a missing entry in the list further down
+				# Make a function to see if king is in check
+				for castl_move in [(60,61),(60,62)]:
 					self.make_move(castl_move)
 					# Get answers
 					answers=self.get_pseudo_moves()
@@ -776,7 +844,7 @@ class board:
 						# Look for no kings
 						has_w_king=False
 						for i in [6,7,8,9]:
-							if self.w_pieces[i]!=[]:
+							if self.sup_data[-1][0][i]!=[]:
 								has_w_king=True
 						# Unmake the move to prepare for next answer
 						self.unmake_move()
@@ -796,7 +864,7 @@ class board:
 			# If black king
 			else:
 				# Move king to squares 61 and 62
-				for castl_mov in [(4,4),(4,5),(4,6)]:
+				for castl_mov in [(4,5),(4,6)]:
 					self.make_move(move)
 					# Get answers
 					answers=self.get_pseudo_moves()
@@ -807,7 +875,7 @@ class board:
 						# Look for no kings
 						has_b_king=False
 						for i in [16,17,18,19]:
-							if self.b_pieces[i]!=[]:
+							if self.sup_data[-1][1][i]!=[]:
 								has_b_king=True
 						# Unmake the move to prepare for next answer
 						self.unmake_move()
@@ -829,7 +897,7 @@ class board:
 			# If white king
 			if self.state[-1][1]==0:
 				# Move king to squares 61 and 62
-				for castl_mov in [(60,60),(60,59),(60,58)]:
+				for castl_mov in [(60,59),(60,58)]:
 					self.make_move(move)
 					# Get answers
 					answers=self.get_pseudo_moves()
@@ -840,7 +908,7 @@ class board:
 						# Look for no kings
 						has_w_king=False
 						for i in [6,7,8,9]:
-							if self.w_pieces[i]!=[]:
+							if self.sup_data[-1][0][i]!=[]:
 								has_w_king=True
 						# Unmake the move to prepare for next answer
 						self.unmake_move()
@@ -860,8 +928,8 @@ class board:
 			# If black king
 			else:
 				# Move king to squares 61 and 62
-				for castl_mov in [(4,4),(4,3),(4,2)]:
-					self.make_move(move)
+				for castl_mov in [(4,3),(4,2)]:
+					self.make_move(castl_mov)
 					# Get answers
 					answers=self.get_pseudo_moves()
 					# See if any answer returns a position without a king, raise ilegal flag if it does
@@ -871,7 +939,7 @@ class board:
 						# Look for no kings
 						has_b_king=False
 						for i in [16,17,18,19]:
-							if self.b_pieces[i]!=[]:
+							if self.sup_data[-1][1][i]!=[]:
 								has_b_king=True
 						# Unmake the move to prepare for next answer
 						self.unmake_move()
@@ -1124,25 +1192,30 @@ class board:
 
 def main_func():
 
-	fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+	#fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+	fen='r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1' # kiwipete
 	frame=get_frame_from_fen(fen)
 
 	test_board=board()
 	test_board.set([frame])
 
+	# print('state',test_board.state)
+	# print('w_pieces',test_board.sup_data[-1][0])
+	# print('b_pieces',test_board.sup_data[-1][1])
+
 	# moves=test_board.get_moves()
-	# move=moves[3]
+	# move=moves[0]
 	# test_board.make_move(move)
 
 	# print('')
-	# print('move', move),'--------'
+	# print('move', move)
 	# print('state',test_board.state)
 	# print('w_pieces',test_board.sup_data[-1][0])
 	# print('b_pieces',test_board.sup_data[-1][1])
 
 	start_time = time.time()
 
-	node_count,_=test_board.lazy_perft(5)
+	node_count,_=test_board.lazy_perft(3)
 	#node_count=test_board.perft(4)
 	print(node_count,'total nodes')
 
