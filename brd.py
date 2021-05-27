@@ -237,9 +237,7 @@ class board:
 		return move_list
 
 
-	# Change king type when rook is captured!
-	# Do promotions!
-	# Stop using the "try... except" clauses to avoid unwanted behaviour
+	# Change king type when rook is captured! Still needed!
 	def make_move(self, move):
 		# Take origin and target pieces
 		piece=self.state[-1][0][move[0]]
@@ -303,7 +301,7 @@ class board:
 			new_half_move=0
 			
 
-		# Moved pawn, DO PROMOTION EXCEPTIONS!!! target_sqr>63 and piece count
+		# Moved pawn
 		elif piece%10==1:
 			# Removing captured piece
 			if target_sqr!='' and target_sqr<64:
@@ -750,7 +748,7 @@ class board:
 		#[print('init item',i,self.sup_data[i]) for i in range(len(self.sup_data))]
 		#print('')
 		for move in moves:
-			#print('getting',move)
+			print('getting',move)
 			# Exception for castling, to avoid castling through check
 			if move[1] in [64,65]:
 				if self.is_castling_legal(move):
@@ -759,6 +757,8 @@ class board:
 			else:
 				# print('testing move:',move,'---------------------------------------------------------------------------')
 				self.make_move(move)
+				self.print_board()
+				print(self.sup_data[-1])
 				# [print('made item',i,self.sup_data[i]) for i in range(len(self.sup_data))]
 				# print('')
 				# Get answers
@@ -766,7 +766,7 @@ class board:
 				# See if any answer returns a position without a king, raise ilegal flag if it does
 				ilegal=False
 				for answer in answers:
-					# print('answer',answer)
+					#print('answer',answer)
 					self.make_move(answer)
 					# [print('supitem',i,self.sup_data[i]) for i in range(len(self.sup_data))]
 					# Look for no kings
@@ -1202,23 +1202,36 @@ def main_func():
 	test_board=board()
 	test_board.set([frame])
 
-	# print('state',test_board.state)
-	# print('w_pieces',test_board.sup_data[-1][0])
-	# print('b_pieces',test_board.sup_data[-1][1])
+	print('state',test_board.state)
+	print('w_pieces',test_board.sup_data[-1][0])
+	print('b_pieces',test_board.sup_data[-1][1])
 
-	# moves=test_board.get_moves()
-	# move=moves[0]
-	# test_board.make_move(move)
+	moves=test_board.get_moves()
+	move=moves[13]
+	test_board.make_move(move)
 
-	# print('')
-	# print('move', move)
-	# print('state',test_board.state)
-	# print('w_pieces',test_board.sup_data[-1][0])
-	# print('b_pieces',test_board.sup_data[-1][1])
+	print('')
+	print('move', move)
+	print('state',test_board.state)
+	print('w_pieces',test_board.sup_data[-1][0])
+	print('b_pieces',test_board.sup_data[-1][1])
+
+	moves=test_board.get_moves()
+	move=moves[0]
+	test_board.make_move(move)
+
+	print('')
+	print('move', move)
+	print('state',test_board.state)
+	print('w_pieces',test_board.sup_data[-1][0])
+	print('b_pieces',test_board.sup_data[-1][1])
+
+	test_board.print_board()
+	print('pieces',test_board.sup_data[-1])
 
 	start_time = time.time()
 
-	node_count,_=test_board.lazy_perft(3)
+	node_count,_=test_board.lazy_perft(1)
 	#node_count=test_board.perft(4)
 	print(node_count,'total nodes')
 
