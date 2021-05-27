@@ -239,6 +239,7 @@ class board:
 
 	# Change king type when rook is captured!
 	# Do promotions!
+	# Stop using the "try... except" clauses to avoid unwanted behaviour
 	def make_move(self, move):
 		# Take origin and target pieces
 		piece=self.state[-1][0][move[0]]
@@ -404,7 +405,7 @@ class board:
 							new_squares[4]=18
 							# Update piece types
 							deep_remove(b_pieces,16,4) # Remove current king
-							deep_append(b_pieces,17,4) # Change to no kingside castle king
+							deep_append(b_pieces,18,4) # Change to no kingside castle king
 						# K
 						elif self.state[-1][0][4]==17:
 							new_squares[4]=19
@@ -418,7 +419,7 @@ class board:
 							new_squares[4]=17
 							# Update piece types
 							deep_remove(b_pieces,16,4) # Remove current king
-							deep_append(b_pieces,18,4) # Change to no queenside castle king
+							deep_append(b_pieces,17,4) # Change to no queenside castle king
 						# Q
 						elif self.state[-1][0][4]==18:
 							new_squares[4]=19
@@ -1073,12 +1074,14 @@ class board:
 		# Otherwise just generate pseudolegal moves
 		moves=self.get_pseudo_moves()
 		for move in moves:
+			if first_call==True:
+				print('Trying', move,'...',end='')
 			# If castling, only do it if known to be legal
 			if move[1] in [64,65]:
 				if self.is_castling_legal(move):
 					
 					self.make_move(move)
-					count=self.lazy_perft(depth-1,first_call=False)
+					count, legal=self.lazy_perft(depth-1,first_call=False)
 					nodes+=count
 					if first_call==True:
 						print(move, count, 'at',time.time() - start_time)
@@ -1127,10 +1130,15 @@ def main_func():
 	test_board=board()
 	test_board.set([frame])
 
-	moves=test_board.get_moves()
+	# moves=test_board.get_moves()
+	# move=moves[3]
+	# test_board.make_move(move)
 
-	#test_board.print_board()
-	test_board.print_moves(8)
+	# print('')
+	# print('move', move),'--------'
+	# print('state',test_board.state)
+	# print('w_pieces',test_board.sup_data[-1][0])
+	# print('b_pieces',test_board.sup_data[-1][1])
 
 	start_time = time.time()
 
