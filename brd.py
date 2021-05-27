@@ -518,7 +518,7 @@ class board:
 			elif move[1]==65:
 				# White king
 				if piece<10:
-					new_squares[56:60]=['','',9,4,'']
+					new_squares[56:61]=['','',9,4,'']
 					# Update piece types
 					# King
 					deep_remove(w_pieces,6,60)
@@ -532,7 +532,7 @@ class board:
 					w_bb+=2**(63-59)
 				# Black king
 				else:
-					new_squares[0:4]=['','',19,14,'']
+					new_squares[0:5]=['','',19,14,'']
 					# Update piece types
 					# King
 					deep_remove(b_pieces,16,4)
@@ -544,6 +544,7 @@ class board:
 					deep_append(b_pieces,14,3)
 					b_bb-=2**(63-0)
 					b_bb+=2**(63-3)
+
 
 			# Else, normal move
 			else:
@@ -650,7 +651,7 @@ class board:
 			if move[1]==65:
 				# White king
 				if piece<10:
-					new_squares[56:60]=['','',9,4,'']
+					new_squares[56:61]=['','',9,4,'']
 					# Update piece types
 					# King
 					deep_remove(w_pieces,8,60)
@@ -664,7 +665,7 @@ class board:
 					w_bb+=2**(63-59)
 				# Black king
 				else:
-					new_squares[0:4]=['','',19,14,'']
+					new_squares[0:5]=['','',19,14,'']
 					# Update piece types
 					# King
 					deep_remove(b_pieces,18,4)
@@ -749,6 +750,7 @@ class board:
 		#[print('init item',i,self.sup_data[i]) for i in range(len(self.sup_data))]
 		#print('')
 		for move in moves:
+			#print('getting',move)
 			# Exception for castling, to avoid castling through check
 			if move[1] in [64,65]:
 				if self.is_castling_legal(move):
@@ -898,7 +900,8 @@ class board:
 			if self.state[-1][1]==0:
 				# Move king to squares 61 and 62
 				for castl_mov in [(60,59),(60,58)]:
-					self.make_move(move)
+					#print('castl move',castl_mov)
+					self.make_move(castl_mov)
 					# Get answers
 					answers=self.get_pseudo_moves()
 					# See if any answer returns a position without a king, raise ilegal flag if it does
