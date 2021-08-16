@@ -1,4 +1,10 @@
-# PythonChess
+# PythonChess (Discontinued)
+
+---
+NOTICE: This project has been discontinued as a shot on making a de facto chess engine on Python. While Python is a worthy language in its own right for many applications regarding data analysis and machine learning, it is not an effective choice for the brute force computations required in the traditional paradigms of chess engines.
+Therefore, this project is now regarded as a framework for a future chess engine written in C++
+---
+
 
 My private python chess engine project.
 
